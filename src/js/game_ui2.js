@@ -2,6 +2,10 @@ function InitialUIHandler(){
     setMapSquareLocation(userCities[currentCity].loc_x, userCities[currentCity].loc_y);
     uiUpdate();
     uiBuildingsUpdate();
+    updateTaskList(function(){
+        uiUpdateTaskList();
+        $(".tasklist .accordion-data").slideDown();
+    });
 }
 function recursiveUiUpdate(cb){
     getUserInfo(function(){
@@ -10,7 +14,8 @@ function recursiveUiUpdate(cb){
 
         updateTaskList(function(){
             uiUpdateTaskList();
-            cb();
+            if(typeof cb == 'function')
+                cb();
         });
     });
 }
@@ -64,14 +69,36 @@ function uiBuildingsUpdate(){
         var html = '';
         for(j in v.result){
             var v2 = v.result[j];
-            html += '<img src="/assets/img/items/res_'+j+'.png"> '+k+' &nbsp;'
+            html += '<img src="/assets/img/items/res_'+j+'.png"> '+v2+' &nbsp;'
         }
         $("#get-"+i).find('.result').html(html);
     }
 }
 function uiUpdateTaskList(cb){
-    for(var task in currentTasks){
-        console.log(task);
+    var ct = Math.floor(Date.now() / 1000);
+    $(".tasklist .accordion-data").html('');
+    for(var i in currentTasks){
+        var v = currentTasks[i];
+        var html = '';
+        html += '<div class="task">';
+        html += '<h4>'+v.taskname+'</h4>';
+        if(v.workers > 0)
+            html += '<p>Workers: <img src="/assets/img/items/res_workers.png" class="wrkic"> <span class="res">'+v.workers+'</span></p>';
+        html += '<p>Time Left: <span class="tleft" data-timee="'+v.time_e+'">'+(v.time_e - ct)+' s</span></p>';
+        if(v.result){
+            html += '<p>Result: ';
+            for(j in v.result){
+                var v2 = v.result[j];
+                html += '<span class="result"><img src="/assets/img/items/res_'+j+'.png"> '+v2+' &nbsp;</span>'
+            }
+            html += '</p>';
+        }
+        html += '<button class="upgrade btn1" data-id="canceltask-'+v.id+'">Cancel</button>';
+        html += '</div>';
+        $(".tasklist .accordion-data").append(html);
+    }
+    if(currentTasks.length == 0){
+        $(".tasklist .accordion-data").html('<p>No runnig task...</p>');
     }
 }
 function updateTaskList(cb){
@@ -112,6 +139,7 @@ function startTask(task, param1){
 
 function showTaskList(){
     recursiveUiUpdate(function(){
-        $(".accordion-data").slideUp();
+        $(".tasklist .accordion-data").slideDown();
+        $('.menuh:first-child').animate({scrollTop: 0}, 100);
     })
 }

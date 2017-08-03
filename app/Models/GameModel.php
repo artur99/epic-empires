@@ -49,7 +49,7 @@ class GameModel extends BaseModel{
             ];
         }else{
             $this->resUpdate($city_data['id'], 0, 0, 0, -$required['workers']);
-            $this->startTask($city_data['id'], 'get', $param, $required['workers'], $required['time']);
+            $this->startTask($city_data['id'], 'get', $param, $required['workers'], $required['time'], $required['result']);
             return [
                 'type' => 'success',
                 'text' => 'Task started successfuly'
@@ -76,13 +76,13 @@ class GameModel extends BaseModel{
         return true;
     }
 
-    function startTask($city_id, $type, $param, $workers, $time, $target = null){
+    function startTask($city_id, $type, $param, $workers, $time, $result = null, $target = null){
         $time_s = time();
         $time_e = time() + $time;
         $city_id = intval($city_id);
         $workers = intval($workers);
 
-        $stmt = $this->db->prepare("INSERT INTO tasks (type, city_id, workers, target, time_s, time_e, param) VALUES (:type, :city_id, :workers, :target, :time_s, :time_e, :param)");
+        $stmt = $this->db->prepare("INSERT INTO tasks (type, city_id, workers, target, time_s, time_e, param, result) VALUES (:type, :city_id, :workers, :target, :time_s, :time_e, :param, :result)");
         $stmt->bindValue('type', $type);
         $stmt->bindValue('city_id', $city_id);
         $stmt->bindValue('target', $target);
@@ -90,6 +90,7 @@ class GameModel extends BaseModel{
         $stmt->bindValue('time_s', $time_s);
         $stmt->bindValue('time_e', $time_e);
         $stmt->bindValue('param', $param);
+        $stmt->bindValue('result', $result ? json_encode($result) : $result);
 
         $stmt->execute();
         return true;
@@ -97,16 +98,27 @@ class GameModel extends BaseModel{
 
     function getTasks($user_id, $city_id){
         if(!($city_data = $this->checkUserCity($user_id, $city_id))) return $this->err2();
+        $this->autoGameCron();
         $stmt = $this->db->prepare("SELECT * FROM tasks WHERE city_id = :city_id");
         $stmt->bindValue('city_id', $city_id);
         $stmt->execute();
 
+        $ac_level = $city_data['b_academy'];
+
         $results = $stmt->fetchAll();
+        $tnd = \Misc\StaticData::taskNames();
+        $rd = \Misc\StaticData::resourceData();
         foreach($results as $k => $r){
-            $tnd = \Misc\StaticData::taskNames();
             $results[$k]['taskname'] = $tnd[$r['type']][$r['param']];
+            $results[$k]['result'] = $rd[$ac_level][$r['param']]['result'];
         }
         return $results;
+    }
+
+    function autoGameCron(){
+        $cron = new \Misc\GameCron($this->db);
+        $cron->run();
+        return true;
     }
 
     function err(){

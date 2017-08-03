@@ -33,6 +33,7 @@ class StaticData{
     }
 
     function resourceData(){
+        // id = academy_level
         $lvl[0] = [
             'food' => [
                 'workers' => 3,
@@ -82,6 +83,16 @@ class StaticData{
             ]
         ];
         return $lvl;
+    }
+
+    function resMax(){
+        // $id = city_level
+        $max = [
+            0 => 500,
+            1 => 500,
+            2 => 5000
+        ];
+        return $max;
     }
     function taskNames(){
         $tn = [

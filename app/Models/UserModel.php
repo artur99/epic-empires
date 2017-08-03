@@ -181,6 +181,7 @@ class UserModel extends BaseModel{
     }
 
     private function getUserCities($user_id){
+        $this->autoGameCron();
         $user_id = intval($user_id);
         $stmt = $this->db->prepare("SELECT * FROM cities WHERE user_id = :uid");
         $stmt->bindValue('uid', $user_id);
@@ -189,9 +190,10 @@ class UserModel extends BaseModel{
 
         $bd = \Misc\StaticData::buildingData();
         $rd = \Misc\StaticData::resourceData();
+        $mxs = \Misc\StaticData::resMax();
 
         foreach($cities as $k => $city){
-            $cities[$k]['r_max'] = $city['level'] == 2 ? 2000 : 500;
+            $cities[$k]['r_max'] = $mxs[$city['level']];
 
             $lv = $city['b_barracks']+1;
             $lv2 = $city['b_academy']+1;
@@ -207,6 +209,11 @@ class UserModel extends BaseModel{
         return $cities;
     }
 
+    function autoGameCron(){
+        $cron = new \Misc\GameCron($this->db);
+        $cron->run();
+        return true;
+    }
 
     function err(){
         return [

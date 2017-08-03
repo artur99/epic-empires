@@ -35,3 +35,17 @@ function getCitiesAroundCoord(x_loc, y_loc, cb){
     var y = parseInt(y_loc / 500);
     getCitiesAround(x, y, cb);
 }
+var timeint = setInterval(function(){
+    var itms = $(".tleft");
+    $.each($(".tleft"), function(i, el){
+        var te = $(el).data('timee');
+        var ct = Math.floor(Date.now() / 1000);
+        var tl = (te - ct);
+        if(tl >= 0){
+            $(el).html(tl.toString() + ' s');
+        }
+        if(tl <= 0){
+            recursiveUiUpdate();
+        }
+    });
+}, 1000);
