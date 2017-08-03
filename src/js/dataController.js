@@ -22,11 +22,16 @@ var l_y_ch = -1000;
 function getCitiesAround(x_sq, y_sq, cb){
     var dif1 = Math.abs(x_sq - l_x_ch);
     var dif2 = Math.abs(y_sq - l_y_ch);
-    if(dif1 < 500 && dif2 < 500) return;
+    if(dif1 < 4 && dif2 < 4) return;
     l_x_ch = x_sq;
     l_y_ch = y_sq;
     ajaxPost('/ajax/data/cities', {x: x_sq, y: y_sq}, function(data){
         otherCities = data;
         cb();
     });
+}
+function getCitiesAroundCoord(x_loc, y_loc, cb){
+    var x = parseInt(x_loc / 500);
+    var y = parseInt(y_loc / 500);
+    getCitiesAround(x, y, cb);
 }

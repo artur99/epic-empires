@@ -7,7 +7,7 @@ function rand(min, max, no, series){
     }
     var rs = 0;
     for(sr in series)
-        rs += series.charCodeAt(sr);
+        rs += series.charCodeAt(sr)*sr;
 
     no++;
     no = ((no * seed1) % seed3) * (seed1/seed2) - seed2 * no;

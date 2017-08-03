@@ -41,6 +41,9 @@ function setMapLocation(x, y){
     $("#game").css('background-position-x', '-'+x+'px')
     $("#game").css('background-position-y', '-'+y+'px')
     drawAll();
+    getCitiesAroundCoord(x, y, function(){
+        drawAll();
+    })
 }
 
 function setMapSquareLocation(x, y){

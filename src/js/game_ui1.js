@@ -20,7 +20,10 @@ function drawTreesInSquare(x, y){
     for(var i=0;i<5;i++){
         var rand1 = rand(0, 500, i, 'trees'+x.toString()+y+'1')-40;
         var rand2 = rand(0, 500, i, 'trees'+x.toString()+y+'2')-40;
-        drawOnMapSquare(x, y, rand1, rand2);
+        if(i > 3)
+            drawOnMapSquare('tree', x, y, rand1, rand2);
+        else
+            drawOnMapSquare('tree2', x, y, rand1, rand2);
     }
 }
 
@@ -54,7 +57,7 @@ function squareIsInScreen(x, y){
     return true;
 }
 
-function drawOnMapSquare(map_x, map_y, inner_x, inner_y){
+function drawOnMapSquare(item, map_x, map_y, inner_x, inner_y){
     var loc_x = (map_x-1) * mapSquareSize + inner_x;
     var loc_y = (map_y-1) * mapSquareSize + inner_y;
     if(
@@ -64,7 +67,7 @@ function drawOnMapSquare(map_x, map_y, inner_x, inner_y){
 
     if(isInScreen(loc_x, loc_y)){
         // console.log(loc_x, loc_y, '???', isInScreen(loc_x, loc_y));
-        drawItem('tree', loc_x, loc_y);
+        drawItem(item, loc_x, loc_y);
     }
 }
 
@@ -76,11 +79,11 @@ function drawItem(what, x, y, cls1, cls2, did){
     y = y - map.offset_y;
     var cls = '';
     var did2 = false;
-    if(typeof cls2 == 'string'){
-        $("#elements").append('<div class="map_item '+cls2+'" style="left:'+x+'px;top:'+y+'px;"></div>');
-    }
     if(typeof did == 'string'){
         did2 = did;
+    }
+    if(typeof cls2 == 'string'){
+        $("#elements").append('<div class="map_item '+cls2+'" style="left:'+x+'px;top:'+y+'px;" '+(did2?'data-id="'+did2+'"':'')+'></div>');
     }
     if(typeof cls1 == 'string')
         cls = cls1;
@@ -96,15 +99,16 @@ function drawMyCities(){
         if(d.id == currentCityId){
             clss ='city-selected';
         }
-        drawItem('city'+d.level, x1, y1, 'city-on-map my-city', 'city-hi my-city '+clss, 'city-'+d.id);
+        drawItem('city'+d.level, x1, y1, 'city-on-map my-city', 'city-div my-city '+clss, 'city-'+d.id);
     }
 }
 function drawOtherCities(x, y, lvl){
     for(cityi in otherCities){
         var d = otherCities[cityi];
+        if(d.user_id == user_id) continue;
         var x1 = (d.loc_x - 0.5) * mapSquareSize;
         var y1 = (d.loc_y - 0.5) * mapSquareSize;
-        drawItem('city'+d.level, x1, y1, 'city-on-map other-city', 'other-city', 'city-'+d.id);
+        drawItem('city'+d.level, x1, y1, 'city-on-map other-city', 'city-div other-city', 'city-'+d.id);
     }
 }
 
