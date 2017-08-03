@@ -168,6 +168,24 @@ class GameModel extends BaseModel{
         return $results;
     }
 
+    function delTask($task_id, $user_id){
+        $stmt = $this->db->prepare("SELECT tasks.id, cities.user_id as user_id FROM tasks INNER JOIN cities ON cities.id = tasks.city_id WHERE tasks.id = :id LIMIT 1");
+        $stmt->bindValue('id', $task_id);
+        $stmt->execute();
+        $r = $stmt->fetch();
+        if(!isset($r['user_id']) || $r['user_id'] != $user_id){
+            return $this->err2();
+        }else{
+            $stmt2 = $this->db->prepare("DELETE FROM tasks WHERE id = :id LIMIT 1");
+            $stmt2->bindValue('id', $task_id);
+            $stmt2->execute();
+            return [
+                'type' => 'success',
+                'text' => 'Task canceled'
+            ];
+        }
+    }
+
     function autoGameCron(){
         $cron = new \Misc\GameCron($this->db);
         $cron->run();

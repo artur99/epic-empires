@@ -33,6 +33,8 @@ class GameCron{
                 $wo += $task['workers'];
                 $this->resUpdate($task['city_id'], $f, $w, $g, $wo, $p);
                 $this->buildingLvlUpdate($task['city_id'], $task['param']);
+                if($task['param'] == 'center')
+                    $this->buildingLvlUpdate($task['city_id'], 'level');
                 $stmt = $this->db->prepare("DELETE FROM tasks WHERE id = :id LIMIT 1");
                 $stmt->bindValue('id', $task['id']);
                 $stmt->execute();

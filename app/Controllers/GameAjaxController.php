@@ -15,6 +15,7 @@ class GameAjaxController implements ControllerProviderInterface{
         $indexController->post('/cities', [$this, 'cities']);
         $indexController->post('/add_task', [$this, 'addTask']);
         $indexController->post('/get_tasks', [$this, 'getTasks']);
+        $indexController->post('/del_task', [$this, 'delTask']);
 
 
         $this->userModel = new UserModel($app['db'], $app['session']);
@@ -43,6 +44,16 @@ class GameAjaxController implements ControllerProviderInterface{
         $uid = $this->userModel->info()['id'];
 
         $q = $this->gameModel->addTask($cid, $uid, $task, $param);
+
+        return new JsonResponse($q);
+    }
+
+    public function delTask(Application $app){
+        if(!$this->userModel->in()) return new JsonResponse($this->gameModel->err());
+        $task_id = $app['request']->request->get('task_id');
+        $uid = $this->userModel->info()['id'];
+
+        $q = $this->gameModel->delTask($task_id, $uid);
 
         return new JsonResponse($q);
     }

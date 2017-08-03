@@ -10,6 +10,7 @@ function InitialUIHandler(){
 function recursiveUiUpdate(cb){
     getUserInfo(function(){
         uiUpdate();
+        drawMyCities();
         uiBuildingsUpdate();
 
         updateTaskList(function(){
@@ -142,6 +143,8 @@ $(document).on('click', '.upgrade', function(e){
         startTask('build', dt2[1]);
     }else if(dt2[0] == 'attack'){
         startTask('attack', dt2[1]);
+    }else if(dt2[0] == 'canceltask'){
+        stopTask(dt2[1]);
     }
 });
 
@@ -150,6 +153,19 @@ function startTask(task, param1){
         city_id: currentCityId,
         task: task,
         param: param1
+    }, function(data){
+        res = parseAjaxData(data);
+        if(res.type == 'error'){
+            error_txt(res.text, res.title);
+        }else{
+            showTaskList();
+        }
+    })
+}
+function stopTask(task_id){
+    ajaxPost('/ajax/game/del_task', {
+        city_id: currentCityId,
+        task_id: task_id
     }, function(data){
         res = parseAjaxData(data);
         if(res.type == 'error'){

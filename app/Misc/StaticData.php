@@ -9,13 +9,13 @@ class StaticData{
                 'time' => 40,
                 'workers' => 10,
                 'costs' => ['wood' => 500, 'gold' => 500, 'food' => 500],
-                'result' => ['points' => 600]
+                'result' => ['workers' => 10, 'points' => 600]
             ],
             '3' => [
                 'time' => 120,
                 'workers' => 20,
                 'costs' => ['wood' => 5000, 'gold' => 5000, 'food' => 5000],
-                'result' => ['points' => 1700]
+                'result' => ['workers' => 30, 'points' => 1700]
             ]
         ];
         $b['barracks'] = [
