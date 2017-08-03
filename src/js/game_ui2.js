@@ -35,32 +35,51 @@ function uiUpdate(){
 function uiBuildingsUpdate(){
     var cd = userCities[currentCity];
     $(".buildings .upgrade").addClass('disabled');
+    for(var i in cd.builddata){
+        var dt = cd.builddata[i];
+        var lvl = parseInt(cd['b_'+i]);
+        $("#building-"+i).find('.level').html(lvl);
+        $("#building-"+i).find('.level2').html(lvl+1);
+        if(typeof dt.workers == 'undefined')
+            dt.workers = 0;
+        $("#building-"+i).find('.wrk').html(dt.workers);
+        if(dt.time != -1){
+            $("#building-"+i).find('.time').html(dt.time.toString()+' s');
+            $("#building-barracks .upgrade").removeClass('disabled');
+        }
+        var html = '';
+        for(var j in dt.costs){
+            var k = dt.costs[j]; //each resource
+            html += '<img src="/assets/img/items/res_'+j+'.png"> '+k+' &nbsp;'
+        }
 
-    $("#building-barracks").find('.level').html(cd.b_barracks);
-    $("#building-barracks").find('.level2').html(parseInt(cd.b_barracks)+1);
-    if(cd.b_barracks2.time != -1){
-        $("#building-barracks").find('.time').html(cd.b_barracks2.time.toString()+' s');
-        $("#building-barracks .upgrade").removeClass('disabled');
+        $("#building-"+i).find('.res').html(html);
     }
-    var html = '';
-    for(var i in cd.b_barracks2.costs){
-        var k = cd.b_barracks2.costs[i]; //each resource
-        html += '<img src="/assets/img/items/res_'+i+'.png"> '+k+' &nbsp;'
-    }
-    $("#building-barracks").find('.res').html(html);
-
-    $("#building-academy").find('.level').html(cd.b_academy);
-    $("#building-academy").find('.level2').html(parseInt(cd.b_academy)+1);
-    if(cd.b_academy2.time != -1){
-        $("#building-academy").find('.time').html(cd.b_academy2.time.toString()+' s');
-        $("#building-academy .upgrade").removeClass('disabled');
-    }
-    var html = '';
-    for(var i in cd.b_academy2.costs){
-        var k = cd.b_academy2.costs[i]; //each resource
-        html += '<img src="/assets/img/items/res_'+i+'.png"> '+k+' &nbsp;'
-    }
-    $("#building-academy").find('.res').html(html);
+    // $("#building-barracks").find('.level').html(cd.b_barracks);
+    // $("#building-barracks").find('.level2').html(parseInt(cd.b_barracks)+1);
+    // if(cd.b_barracks2.time != -1){
+    //     $("#building-barracks").find('.time').html(cd.b_barracks2.time.toString()+' s');
+    //     $("#building-barracks .upgrade").removeClass('disabled');
+    // }
+    // var html = '';
+    // for(var i in cd.b_barracks2.costs){
+    //     var k = cd.b_barracks2.costs[i]; //each resource
+    //     html += '<img src="/assets/img/items/res_'+i+'.png"> '+k+' &nbsp;'
+    // }
+    // $("#building-barracks").find('.res').html(html);
+    //
+    // $("#building-academy").find('.level').html(cd.b_academy);
+    // $("#building-academy").find('.level2').html(parseInt(cd.b_academy)+1);
+    // if(cd.b_academy2.time != -1){
+    //     $("#building-academy").find('.time').html(cd.b_academy2.time.toString()+' s');
+    //     $("#building-academy .upgrade").removeClass('disabled');
+    // }
+    // var html = '';
+    // for(var i in cd.b_academy2.costs){
+    //     var k = cd.b_academy2.costs[i]; //each resource
+    //     html += '<img src="/assets/img/items/res_'+i+'.png"> '+k+' &nbsp;'
+    // }
+    // $("#building-academy").find('.res').html(html);
 
     for(var i in cd.resdata){
         var v = cd.resdata[i];
@@ -119,6 +138,10 @@ $(document).on('click', '.upgrade', function(e){
     var dt2 = dt.split('-');
     if(dt2[0] == 'get'){
         startTask('get', dt2[1]);
+    }else if(dt2[0] == 'build'){
+        startTask('build', dt2[1]);
+    }else if(dt2[0] == 'attack'){
+        startTask('attack', dt2[1]);
     }
 });
 

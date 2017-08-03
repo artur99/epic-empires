@@ -205,6 +205,10 @@ class UserModel extends BaseModel{
             $cities[$k]['b_academy2']['costs'] = isset($bd['academy'][$lv]) ? $bd['academy'][$lv]['costs'] : -1;
 
             $cities[$k]['resdata'] = $rd[$lv2-1];
+            $cities[$k]['builddata']['barracks'] = @$bd['barracks'][$city['b_barracks']+1];
+            $cities[$k]['builddata']['academy'] = @$bd['academy'][$city['b_academy']+1];
+            $cities[$k]['builddata']['house'] = @$bd['house'][$city['b_house']+1];
+            $cities[$k]['builddata']['center'] = @$bd['center'][$city['b_center']+1];
         }
         return $cities;
     }

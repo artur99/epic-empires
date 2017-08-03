@@ -30,6 +30,8 @@ class GameModel extends BaseModel{
         if(!($city_data = $this->checkUserCity($user_id, $city_id))) return $this->err2();
         if($task == 'get' && in_array($param, ['food', 'gold', 'wood'])){
             return $this->addResourceTask($city_data, $param);
+        }elseif($task == 'build' && in_array($param, ['center', 'academy', 'house', 'barracks'])){
+            return $this->addBuildTask($city_data, $param);
         }else{
             return [
                 'type' => 'error',
@@ -55,7 +57,54 @@ class GameModel extends BaseModel{
                 'text' => 'Task started successfuly'
             ];
         }
+    }
 
+    private function addBuildTask($city_data, $param){
+        $bd = \Misc\StaticData::buildingData();
+        $b_level = intval($city_data['b_'.$param]);
+        $required = $bd[$param][$b_level+1];
+        $costs = isset($required['costs']) ? $required['costs'] : null;
+        $req2['workers'] = isset($required['workers']) ? $required['workers'] : 0;
+        $req2['food'] = isset($costs['food']) ? $costs['food'] : 0;
+        $req2['wood'] = isset($costs['wood']) ? $costs['wood'] : 0;
+        $req2['gold'] = isset($costs['gold']) ? $costs['gold'] : 0;
+        $req2['time'] = isset($required['time']) ? $required['time'] : 0;
+        $req2['result'] = isset($required['result']) ? $required['result'] : null;
+        $err = false;
+        if($this->buidTaskExists($city_data['id'], $param)){
+            $err = 'You are already working on this building';
+        }elseif(intval($city_data['r_workers']) < $req2['workers']){
+            $err = 'You don\'t have enough free workers for this';
+        }elseif(intval($city_data['r_food']) < $req2['food']){
+            $err = 'You don\'t have enough food for this';
+        }elseif(intval($city_data['r_wood']) < $req2['wood']){
+            $err = 'You don\'t have enough wood for this';
+        }elseif(intval($city_data['r_gold']) < $req2['gold']){
+            $err = 'You don\'t have enough gold for this';
+        }else{
+            $this->resUpdate($city_data['id'], -$req2['food'], -$req2['wood'], -$req2['gold'], -$req2['workers']);
+            $this->startTask($city_data['id'], 'build', $param, $req2['workers'], $required['time'], $required['result']);
+            return [
+                'type' => 'success',
+                'text' => 'Task started successfuly'
+            ];
+        }
+        return [
+            'type' => 'error',
+            'text' => $err
+        ];
+    }
+
+    function buidTaskExists($city_id, $param){
+        $stmt = $this->db->prepare("SELECT id FROM tasks WHERE city_id = :cid AND param = :param LIMIT 1");
+        $stmt->bindValue('cid', $city_id);
+        $stmt->bindValue('param', $param);
+        $stmt->execute();
+        $r = $stmt->fetch();
+        if(!isset($r['id'])){
+            return false;
+        }
+        return true;
     }
 
     function resUpdate($cid, $food = 0, $wood = 0, $gold = 0, $workers = 0){
@@ -110,7 +159,11 @@ class GameModel extends BaseModel{
         $rd = \Misc\StaticData::resourceData();
         foreach($results as $k => $r){
             $results[$k]['taskname'] = $tnd[$r['type']][$r['param']];
-            $results[$k]['result'] = $rd[$ac_level][$r['param']]['result'];
+            if($r['type'] == 'get'){
+                $results[$k]['result'] = $rd[$ac_level][$r['param']]['result'];
+            }elseif($r['type'] == 'build'){
+                $results[$k]['result'] = null;//$rd[$ac_level][$r['param']]['result'];
+            }
         }
         return $results;
     }
