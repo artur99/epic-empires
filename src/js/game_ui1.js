@@ -20,7 +20,7 @@ function drawTreesInSquare(x, y){
     for(var i=0;i<5;i++){
         var rand1 = rand(0, 500, i, 'trees'+x.toString()+y+'1')-40;
         var rand2 = rand(0, 500, i, 'trees'+x.toString()+y+'2')-40;
-        if(i > 3)
+        if(i <= 3)
             drawOnMapSquare('tree', x, y, rand1, rand2);
         else
             drawOnMapSquare('tree2', x, y, rand1, rand2);

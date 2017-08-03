@@ -185,7 +185,11 @@ class UserModel extends BaseModel{
         $stmt = $this->db->prepare("SELECT * FROM cities WHERE user_id = :uid");
         $stmt->bindValue('uid', $user_id);
         $stmt->execute();
-        return $stmt->fetchAll();
+        $cities = $stmt->fetchAll();
+        foreach($cities as $k => $city){
+            $cities[$k]['r_max'] = $city['level'] == 2 ? 2000 : 500;
+        }
+        return $cities;
     }
 
     function err(){
