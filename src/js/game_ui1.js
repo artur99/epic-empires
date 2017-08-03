@@ -96,7 +96,7 @@ function drawMyCities(){
         var x1 = (d.loc_x - 0.5) * mapSquareSize;
         var y1 = (d.loc_y - 0.5) * mapSquareSize;
         var clss = '';
-        if(d.id == currentCityId){
+        if(!selectedCity && d.id == currentCityId){
             clss ='city-selected';
         }
         drawItem('city'+d.level, x1, y1, 'city-on-map my-city', 'city-div my-city '+clss, 'city-'+d.id);
@@ -108,7 +108,11 @@ function drawOtherCities(x, y, lvl){
         if(d.user_id == user_id) continue;
         var x1 = (d.loc_x - 0.5) * mapSquareSize;
         var y1 = (d.loc_y - 0.5) * mapSquareSize;
-        drawItem('city'+d.level, x1, y1, 'city-on-map other-city', 'city-div other-city', 'city-'+d.id);
+        var clss = '';
+        if(selectedCity == d.id){
+            clss ='city-selected';
+        }
+        drawItem('city'+d.level, x1, y1, 'city-on-map other-city', 'city-div other-city '+clss, 'city-'+d.id);
     }
 }
 

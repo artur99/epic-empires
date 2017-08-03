@@ -11,6 +11,7 @@ function recursiveUiUpdate(cb){
     getUserInfo(function(){
         uiUpdate();
         drawMyCities();
+        drawOtherCities();
         uiBuildingsUpdate();
 
         updateTaskList(function(){
@@ -32,6 +33,10 @@ function uiUpdate(){
     $("#res-wood").prev().attr('title', 'Wood | Max: '+cd.r_max);
     $("#res-workers").html(cd.r_workers);
     $("#res-workers").prev().attr('title', 'Free Workers');
+    $("#res-unit").html(cd.units);
+    $("#res-unit").prev().attr('title', 'Terrain troop units');
+    $("#res-archer").html(cd.archers);
+    $("#res-archer").prev().attr('title', 'Archer troop units');
 }
 function uiBuildingsUpdate(){
     var cd = userCities[currentCity];
@@ -56,31 +61,6 @@ function uiBuildingsUpdate(){
 
         $("#building-"+i).find('.res').html(html);
     }
-    // $("#building-barracks").find('.level').html(cd.b_barracks);
-    // $("#building-barracks").find('.level2').html(parseInt(cd.b_barracks)+1);
-    // if(cd.b_barracks2.time != -1){
-    //     $("#building-barracks").find('.time').html(cd.b_barracks2.time.toString()+' s');
-    //     $("#building-barracks .upgrade").removeClass('disabled');
-    // }
-    // var html = '';
-    // for(var i in cd.b_barracks2.costs){
-    //     var k = cd.b_barracks2.costs[i]; //each resource
-    //     html += '<img src="/assets/img/items/res_'+i+'.png"> '+k+' &nbsp;'
-    // }
-    // $("#building-barracks").find('.res').html(html);
-    //
-    // $("#building-academy").find('.level').html(cd.b_academy);
-    // $("#building-academy").find('.level2').html(parseInt(cd.b_academy)+1);
-    // if(cd.b_academy2.time != -1){
-    //     $("#building-academy").find('.time').html(cd.b_academy2.time.toString()+' s');
-    //     $("#building-academy .upgrade").removeClass('disabled');
-    // }
-    // var html = '';
-    // for(var i in cd.b_academy2.costs){
-    //     var k = cd.b_academy2.costs[i]; //each resource
-    //     html += '<img src="/assets/img/items/res_'+i+'.png"> '+k+' &nbsp;'
-    // }
-    // $("#building-academy").find('.res').html(html);
 
     for(var i in cd.resdata){
         var v = cd.resdata[i];
@@ -182,3 +162,4 @@ function showTaskList(){
         $('.menuh:first-child').animate({scrollTop: 0}, 100);
     })
 }
+setInterval(recursiveUiUpdate, 15000);

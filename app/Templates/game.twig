@@ -17,6 +17,9 @@
                     <br>
                     <img src="{{asset('img/items/res_gold.png')}}" alt="" class="res-img"> <span id="res-gold">-</span>
                     <img src="{{asset('img/items/res_workers.png')}}" alt="" class="res-img"> <span id="res-workers">-</span>
+                    <br>
+                    <img src="{{asset('img/items/res_unit.png')}}" alt="" class="res-img unit"> <span id="res-unit">-</span>
+                    <img src="{{asset('img/items/res_archer.png')}}" alt="" class="res-img unit"> <span id="res-archer">-</span>
                 </div>
                 <div class="tasklist accordion">
                     <h3 class="switcher">Tasks</h3>
@@ -105,9 +108,31 @@
         </div>
         <div class="menu">
             <div class="menuh" id="right-data">
-                <p class="none-show">- Select a city -</p>
+                <p class="none-show">Select a city or a section</p>
                 <div id="selected-city-show">
-
+                    <div class="bar">City</div>
+                    <h2 class="user-name">-</h2>
+                    <img src="/assets/img/items/city1.png" alt="" class="cityimage">
+                    <p class="textp city-name">-</p>
+                    <div class="attack accordion">
+                        <h3 class="switcher">Attack</h3>
+                        <div class="accordion-data">
+                            <div id="attack-form">
+                                <p>You can attack this city with your troops.</p>
+                                <p>Distance: <span class="dist">-</span></p>
+                                <p>Duration: <span class="time">-</span></p>
+                                <p>Result: <span class="result">-</span></p>
+                                <button class="upgrade btn1" data-id="">Send workers</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="selected-own-city-show">
+                    <div class="bar">City</div>
+                    <h2 class="user-name">-</h2>
+                    <img src="/assets/img/items/city1.png" alt="" class="cityimage">
+                    <p class="textp city-name">-</p>
+                    <p class="textp2">- This is your city -</p>
                 </div>
             </div>
         </div>

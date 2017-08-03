@@ -4,13 +4,15 @@ $(document).on('click', '.city-on-map', function(e){
     var my_city = $(this).hasClass('my-city');
     $(".city-div").removeClass('city-selected');
     $(".city-div[data-id=city-"+city_id+"]").addClass('city-selected');
-    $(".none-show").hide();
+    $(".none-show, #selected-city-show, #selected-own-city-show").hide();
+    selectedCity = city_id;
     if(!my_city){
         fillWithEnemyCity(city_id);
+        $("#selected-city-show").show();
     }else{
         fillWithMyCity(city_id);
+        $("#selected-own-city-show").show();
     }
-    $("#selected-city-show").show();
 });
 function getCityData(city_id){
     for(var id in otherCities){
@@ -24,17 +26,29 @@ function getCityData(city_id){
 function fillWithEnemyCity(city_id){
     var city_data = getCityData(city_id);
     var htmlc = '';
-    htmlc += '<h2>'+city_data.username+'</h2>'
-    htmlc += '<img src="/assets/img/items/city'+city_data.level+'.png" alt="" class="cityimage">';
-    htmlc += '<p class="textp">City 1 ('+city_data.points+' p)</p>';
-    $("#selected-city-show").html(htmlc);
+    $("#selected-city-show").find('.user-name').html(city_data.username).data('id', city_data.id);
+    $("#selected-city-show").find('.cityimage').attr('src', '/assets/img/items/city'+city_data.level+'.png');
+    $("#selected-city-show").find('.city-name').html('City 1 ('+city_data.points+')');
+    $("#attack-form").find('.upgrade').data('id', city_id);
+    var dist = distanceRate * cityDist(currentCityId, city_id);
+    var time = parseInt(dist * spmRate);
+    $("#attack-form").find('.dist').html(dist+' miles');
+    $("#attack-form").find('.time').html(time+' s');
+
 }
 function fillWithMyCity(city_id){
     var city_data = getCityData(city_id);
-    var htmlc = '';
-    htmlc += '<h2>'+city_data.username+'</h2>'
-    htmlc += '<img src="/assets/img/items/city'+city_data.level+'.png" alt="" class="cityimage">';
-    htmlc += '<p class="textp">City 1 ('+city_data.points+' p)</p>';
-    htmlc += '<p class="textp2">- This is your city -</p>';
-    $("#selected-city-show").html(htmlc);
+    $("#selected-own-city-show").find('.user-name').html(city_data.username).data('id', city_data.id);
+    $("#selected-own-city-show").find('.cityimage').attr('src', '/assets/img/items/city'+city_data.level+'.png');
+    $("#selected-own-city-show").find('.city-name').html('City 1 ('+city_data.points+')');
+}
+function cityDist(city1_id, city2_id){
+    city1data = getCityData(city1_id);
+    city2data = getCityData(city2_id);
+    var x1 = city1data.loc_x;
+    var y1 = city1data.loc_y;
+    var x2 = city2data.loc_x;
+    var y2 = city2data.loc_y;
+
+    return Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
 }

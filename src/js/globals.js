@@ -4,4 +4,7 @@ var map = {offset_x:0, offset_y:0};
 var userCities = null;
 var otherCities = null;
 var currentCity = 0;
+var selectedCity = null;
 var currentTasks = null;
+var distanceRate = 43;
+var spmRate = 1.3;
