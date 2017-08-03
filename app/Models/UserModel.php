@@ -188,17 +188,21 @@ class UserModel extends BaseModel{
         $cities = $stmt->fetchAll();
 
         $bd = \Misc\StaticData::buildingData();
+        $rd = \Misc\StaticData::resourceData();
 
         foreach($cities as $k => $city){
             $cities[$k]['r_max'] = $city['level'] == 2 ? 2000 : 500;
 
             $lv = $city['b_barracks']+1;
+            $lv2 = $city['b_academy']+1;
 
             $cities[$k]['b_barracks2']['time'] = isset($bd['barracks'][$lv]) ? $bd['barracks'][$lv]['time'] : -1;
             $cities[$k]['b_barracks2']['costs'] = isset($bd['barracks'][$lv]) ? $bd['barracks'][$lv]['costs'] : -1;
 
             $cities[$k]['b_academy2']['time'] = isset($bd['academy'][$lv]) ? $bd['academy'][$lv]['time'] : -1;
             $cities[$k]['b_academy2']['costs'] = isset($bd['academy'][$lv]) ? $bd['academy'][$lv]['costs'] : -1;
+
+            $cities[$k]['resdata'] = $rd[$lv2-1];
         }
         return $cities;
     }

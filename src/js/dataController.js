@@ -25,7 +25,7 @@ function getCitiesAround(x_sq, y_sq, cb){
     if(dif1 < 4 && dif2 < 4) return;
     l_x_ch = x_sq;
     l_y_ch = y_sq;
-    ajaxPost('/ajax/data/cities', {x: x_sq, y: y_sq}, function(data){
+    ajaxPost('/ajax/game/cities', {x: x_sq, y: y_sq}, function(data){
         otherCities = data;
         cb();
     });

@@ -6,7 +6,7 @@ function InitialUIHandler(){
 function uiUpdate(){
     var cd = userCities[currentCity];
     $('.cityimage').attr('src', '/assets/img/items/city'+cd.level+'.png');
-    $("#city-name").html('City 1 ('+cd.points+')');
+    $("#city-name").html('City 1 ('+cd.points+' p)');
     $("#res-food").html(cd.r_food);
     $("#res-food").prev().attr('title', 'Food | Max: '+cd.r_max);
     $("#res-gold").html(cd.r_gold);
@@ -45,4 +45,40 @@ function uiBuildingsUpdate(){
         html += '<img src="/assets/img/items/res_'+i+'.png"> '+k+' &nbsp;'
     }
     $("#building-academy").find('.res').html(html);
+
+    for(var i in cd.resdata){
+        var v = cd.resdata[i];
+        $("#get-"+i).find('.res').html(v.workers);
+        $("#get-"+i).find('.time').html(v.time.toString()+' s');
+    }
+}
+
+
+
+$(document).on('click', '.upgrade', function(e){
+    e.preventDefault();
+    var dt = $(this).data();
+    var dt2 = dt.split('-');
+    if(dt[0] == 'get'){
+        startTask('get', dt[1]);
+    }
+});
+
+function startTask(task, param1){
+    ajaxPost('/ajax/game/add_task', {
+        city_id: currentCityId,
+        task: task,
+        param: param1
+    }, function(data){
+        res = parseAjaxData(data);
+        if(res.type == 'error'){
+            error_txt(res.text, res.title);
+        }else{
+            showTaskList();
+        }
+    })
+}
+
+function showTaskList(){
+    alert("ADDED");
 }

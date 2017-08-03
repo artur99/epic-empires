@@ -31,4 +31,50 @@ class StaticData{
 
         return $b;
     }
+
+    function resourceData(){
+        $lvl[0] = [
+            'food' => [
+                'workers' => 3,
+                'time' => 70
+            ],
+            'wood' => [
+                'workers' => 4,
+                'time' => 80
+            ],
+            'gold' => [
+                'workers' => 8,
+                'time' => 130
+            ]
+        ];
+        $lvl[1] = [
+            'food' => [
+                'workers' => 2,
+                'time' => 70
+            ],
+            'wood' => [
+                'workers' => 3,
+                'time' => 80
+            ],
+            'gold' => [
+                'workers' => 5,
+                'time' => 130
+            ]
+        ];
+        $lvl[2] = [
+            'food' => [
+                'workers' => 1,
+                'time' => 70
+            ],
+            'wood' => [
+                'workers' => 2,
+                'time' => 70
+            ],
+            'gold' => [
+                'workers' => 4,
+                'time' => 90
+            ]
+        ];
+        return $lvl;
+    }
 }

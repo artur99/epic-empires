@@ -12,6 +12,12 @@ class IndexController implements ControllerProviderInterface{
         return $indexController;
     }
     public function index(Application $app){
-        return $app['twig']->render('index.twig');
+        $seo = new \Misc\SeoClass();
+        $seo->set('title', 'Epic Empires - A brand new MMO');
+        $seo->set('descr', 'Play a brand new MMO on Epic Empires, just taken off from the game developers\' desk.');
+
+        return $app['twig']->render('index.twig', [
+            'meta' => $seo->getAll()
+        ]);
     }
 }
