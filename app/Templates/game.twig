@@ -18,6 +18,17 @@
                     <img src="{{asset('img/items/res_gold.png')}}" alt="" class="res-img"> <span id="res-gold">-</span>
                     <img src="{{asset('img/items/res_workers.png')}}" alt="" class="res-img"> <span id="res-workers">-</span>
                 </div>
+                <div class="tasklist accordion">
+                    <h3 class="switcher">Tasks</h3>
+                    <div class="accordion-data">
+                        <div class="task">
+                            <h4>Wood Gathering</h4>
+                            <p>Workers: <img src="/assets/img/items/res_workers.png" class="wrkic"> <span class="res">-</span></p>
+                            <p>Time Left: <span class="tleft">-</span></p>
+                            <button class="upgrade btn1" data-id="get-wood">Send workers</button>
+                        </div>
+                    </div>
+                </div>
                 <div class="buildings accordion">
                     <h3 class="switcher">Buildings</h3>
                     <div class="accordion-data">
@@ -52,6 +63,7 @@
                             <p>You can send your workers to gather wood.</p>
                             <p>Workers: <img src="/assets/img/items/res_workers.png" class="wrkic"> <span class="res">-</span></p>
                             <p>Duration: <span class="time">-</span></p>
+                            <p>Result: <span class="result">-</span></p>
                             <button class="upgrade btn1" data-id="get-wood">Send workers</button>
                         </div>
                         <div id="get-food">
@@ -59,6 +71,7 @@
                             <p>You can send your workers to hunt for food.</p>
                             <p>Workers: <img src="/assets/img/items/res_workers.png" class="wrkic"> <span class="res">-</span></p>
                             <p>Duration: <span class="time">-</span></p>
+                            <p>Result: <span class="result">-</span></p>
                             <button class="upgrade btn1" data-id="get-food">Send workers</button>
                         </div>
                         <div id="get-gold">
@@ -66,6 +79,7 @@
                             <p>You can send your workers to mine for gold.</p>
                             <p>Workers: <img src="/assets/img/items/res_workers.png" class="wrkic"> <span class="res">-</span></p>
                             <p>Duration: <span class="time">-</span></p>
+                            <p>Result: <span class="result">-</span></p>
                             <button class="upgrade btn1" data-id="get-gold">Send workers</button>
                         </div>
                     </div>

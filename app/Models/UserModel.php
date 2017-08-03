@@ -207,6 +207,7 @@ class UserModel extends BaseModel{
         return $cities;
     }
 
+
     function err(){
         return [
             'type' => 'error',

@@ -27,14 +27,14 @@ class GameModel extends BaseModel{
     }
 
     function addTask($city_id, $user_id, $task, $param){
-        if(!($city_data = $this->checkUserCity($user_id, $city_id)){
-            return [
-                'type' => 'error',
-                'text' => 'This is not your city'
-            ];
-        }
+        if(!($city_data = $this->checkUserCity($user_id, $city_id))) return $this->err2();
         if($task == 'get' && in_array($param, ['food', 'gold', 'wood'])){
             return $this->addResourceTask($city_data, $param);
+        }else{
+            return [
+                'type' => 'error',
+                'text' => 'Something really bad happened there. o.O'
+            ];
         }
     }
 
@@ -48,34 +48,45 @@ class GameModel extends BaseModel{
                 'text' => 'You don\'t have enough free workers for this'
             ];
         }else{
-            $this->resUpdate(0, 0, 0, $required['workers']);
-            $this->startTask($city_data['id'], 'get', $param, $required['time']);
+            $this->resUpdate($city_data['id'], 0, 0, 0, -$required['workers']);
+            $this->startTask($city_data['id'], 'get', $param, $required['workers'], $required['time']);
+            return [
+                'type' => 'success',
+                'text' => 'Task started successfuly'
+            ];
         }
 
     }
 
-    function resUpdate($food = 0, $wood = 0, $gold = 0, $workers = 0){
+    function resUpdate($cid, $food = 0, $wood = 0, $gold = 0, $workers = 0){
         $food = intval($food);
         $wood = intval($wood);
         $gold = intval($gold);
         $workers = intval($workers);
-        $stmt = $this->db->prepare("UPDATE cities SET r_food = r_food + :food, r_wood = r_wood + :wood, r_gold = r_gold + :gold, r_workers = r_workers + :workers");
+        $cid = intval($cid);
+
+        $stmt = $this->db->prepare("UPDATE cities SET r_food = r_food + :food, r_wood = r_wood + :wood, r_gold = r_gold + :gold, r_workers = r_workers + :workers WHERE id = :cid");
         $stmt->bindValue('food', $food);
         $stmt->bindValue('wood', $wood);
         $stmt->bindValue('gold', $gold);
         $stmt->bindValue('workers', $workers);
+        $stmt->bindValue('cid', $cid);
         $stmt->execute();
+
         return true;
     }
 
-    function startTask($city_id, $type, $param, $time, $target = null){
+    function startTask($city_id, $type, $param, $workers, $time, $target = null){
         $time_s = time();
         $time_e = time() + $time;
+        $city_id = intval($city_id);
+        $workers = intval($workers);
 
-        $stmt = $this->db->prepare("INSERT INTO tasks (type, city_id, target, time_s, time_e, param) VALUES (:type, :city, :target, :time_s, :time_e, :param)");
+        $stmt = $this->db->prepare("INSERT INTO tasks (type, city_id, workers, target, time_s, time_e, param) VALUES (:type, :city_id, :workers, :target, :time_s, :time_e, :param)");
         $stmt->bindValue('type', $type);
         $stmt->bindValue('city_id', $city_id);
         $stmt->bindValue('target', $target);
+        $stmt->bindValue('workers', $workers);
         $stmt->bindValue('time_s', $time_s);
         $stmt->bindValue('time_e', $time_e);
         $stmt->bindValue('param', $param);
@@ -84,10 +95,30 @@ class GameModel extends BaseModel{
         return true;
     }
 
+    function getTasks($user_id, $city_id){
+        if(!($city_data = $this->checkUserCity($user_id, $city_id))) return $this->err2();
+        $stmt = $this->db->prepare("SELECT * FROM tasks WHERE city_id = :city_id");
+        $stmt->bindValue('city_id', $city_id);
+        $stmt->execute();
+
+        $results = $stmt->fetchAll();
+        foreach($results as $k => $r){
+            $tnd = \Misc\StaticData::taskNames();
+            $results[$k]['taskname'] = $tnd[$r['type']][$r['param']];
+        }
+        return $results;
+    }
+
     function err(){
         return [
             'type' => 'error',
             'text' => 'Please refresh the page'
+        ];
+    }
+    function err2(){
+        return [
+            'type' => 'error',
+            'text' => 'This is not your city'
         ];
     }
 }

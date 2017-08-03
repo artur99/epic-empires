@@ -36,29 +36,35 @@ class StaticData{
         $lvl[0] = [
             'food' => [
                 'workers' => 3,
-                'time' => 70
+                'time' => 70,
+                'result' => ['food'=>'100']
             ],
             'wood' => [
                 'workers' => 4,
-                'time' => 80
+                'time' => 80,
+                'result' => ['wood'=>'100']
             ],
             'gold' => [
                 'workers' => 8,
-                'time' => 130
+                'time' => 130,
+                'result' => ['gold'=>'100']
             ]
         ];
         $lvl[1] = [
             'food' => [
                 'workers' => 2,
-                'time' => 70
+                'time' => 70,
+                'result' => ['food'=>'120']
             ],
             'wood' => [
                 'workers' => 3,
-                'time' => 80
+                'time' => 80,
+                'result' => ['wood'=>'120']
             ],
             'gold' => [
                 'workers' => 5,
-                'time' => 130
+                'time' => 130,
+                'result' => ['gold'=>'120']
             ]
         ];
         $lvl[2] = [
@@ -76,5 +82,23 @@ class StaticData{
             ]
         ];
         return $lvl;
+    }
+    function taskNames(){
+        $tn = [
+            'get' => [
+                'food' => 'Hunting for food',
+                'wood' => 'Gathering wood',
+                'gold' => 'Minning for gold'
+            ],
+            'build' => [
+                'academy' => 'Upgrading Academy',
+                'center' => 'Upgrading Center',
+                'barracks' => 'Upgrading Barracks'
+            ],
+            'attack' => [
+                'attack' => 'Attacking'
+            ]
+        ];
+        return $tn;
     }
 }

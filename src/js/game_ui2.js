@@ -3,6 +3,17 @@ function InitialUIHandler(){
     uiUpdate();
     uiBuildingsUpdate();
 }
+function recursiveUiUpdate(cb){
+    getUserInfo(function(){
+        uiUpdate();
+        uiBuildingsUpdate();
+
+        updateTaskList(function(){
+            uiUpdateTaskList();
+            cb();
+        });
+    });
+}
 function uiUpdate(){
     var cd = userCities[currentCity];
     $('.cityimage').attr('src', '/assets/img/items/city'+cd.level+'.png');
@@ -50,17 +61,37 @@ function uiBuildingsUpdate(){
         var v = cd.resdata[i];
         $("#get-"+i).find('.res').html(v.workers);
         $("#get-"+i).find('.time').html(v.time.toString()+' s');
+        var html = '';
+        for(j in v.result){
+            var v2 = v.result[j];
+            html += '<img src="/assets/img/items/res_'+j+'.png"> '+k+' &nbsp;'
+        }
+        $("#get-"+i).find('.result').html(html);
     }
+}
+function uiUpdateTaskList(cb){
+    for(var task in currentTasks){
+        console.log(task);
+    }
+}
+function updateTaskList(cb){
+    ajaxPost('/ajax/game/get_tasks', {
+        city_id: currentCityId
+    }, function(data){
+        currentTasks = data;
+        if(typeof cb == 'function')
+            cb();
+    })
 }
 
 
 
 $(document).on('click', '.upgrade', function(e){
     e.preventDefault();
-    var dt = $(this).data();
+    var dt = $(this).data('id');
     var dt2 = dt.split('-');
-    if(dt[0] == 'get'){
-        startTask('get', dt[1]);
+    if(dt2[0] == 'get'){
+        startTask('get', dt2[1]);
     }
 });
 
@@ -80,5 +111,7 @@ function startTask(task, param1){
 }
 
 function showTaskList(){
-    alert("ADDED");
+    recursiveUiUpdate(function(){
+        $(".accordion-data").slideUp();
+    })
 }

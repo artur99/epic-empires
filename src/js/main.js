@@ -62,16 +62,20 @@ function ajaxAlertHandler(data, succ_cb, err_cb){
 }
 
 function error(){
-    swal('Eroare', 'A apărut o eroare! Te rugăm să încerci din nou mai târziu.', 'error');
+    swal('Error', 'We\'ve got an error! Please try again later.', 'error');
 }
 function error_txt(txt, title){
     if(typeof title != 'string')
-        title = 'Eroare';
+        title = 'Sorry!';
+    if(txt[txt.length-1] != '.' && txt[txt.length-1] != '!')
+        txt +='.';
     swal(title, txt, 'error');
 }
 function succ_txt(txt, title){
     if(typeof title != 'string')
-        title = 'Acțiune reușită!';
+        title = 'Done!';
+    if(txt[txt.length-1] != '.' && txt[txt.length-1] != '!')
+        txt +='.';
     swal(title, txt, 'success');
 }
 function reload(time, loc){
