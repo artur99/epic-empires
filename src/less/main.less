@@ -1,0 +1,25 @@
+@import '_variables.less';
+
+html, body{
+    margin: 0;
+    padding: 0;
+    display: block;
+    font-family: 'Julee', cursive, sans-serif;
+    background: url(../img/bg1.png), @brown1;
+    background-size: cover;
+}
+html:not(.mobile), body:not(.mobile){
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+*{
+    box-sizing: border-box;
+}
+.inner{
+    width: 100%;
+    height: 100%;
+    display: block;
+    background: rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}

@@ -1,0 +1,14 @@
+debug: true
+
+conf.title: 'Titlu site'
+
+conf.timezone: 'Europe/Bucharest'
+
+conf.db.host: localhost
+conf.db.user: root
+conf.db.pass:
+conf.db.name: nume_db
+
+conf.facebook.use: 0
+conf.facebook.app_id:
+conf.facebook.app_secret:

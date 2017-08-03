@@ -1,0 +1,22 @@
+{
+    "require": {
+        "silex/silex": "^2.1",
+        "symfony/yaml": "^3",
+        "symfony/security": "^3",
+        "symfony/security-csrf": "^3",
+        "symfony/twig-bridge": "^3",
+        "doctrine/dbal": "^2.5",
+        "twig/extensions": "^1.3",
+        "danielstjules/stringy": "^3"
+    },
+    "config": {
+        "vendor-dir": "_phpvendor"
+    },
+    "autoload": {
+        "psr-0": {
+            "Controllers": "app/",
+            "Models": "app/",
+            "Misc": "app/"
+        }
+    }
+}

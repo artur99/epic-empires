@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {%set fulltitle = 'Game'%}
+    {% include 'part/head.twig' %}
+</head>
+<body class="game">
+    <div class="inner2">
+        <div class="menu">
+            <div class="menuh">
+                <h2>{{user.username}}</h2>
+                <img src="{{asset('img/items/city1.png')}}" alt="" class="cityimage">
+                <p class="textp" id="city-name">Loading...</p>
+            </div>
+        </div>
+        <div class="game" id="game">
+            <div class="arrow" id="left-arrow">&lt;</div>
+            <div class="arrow" id="right-arrow">&gt;</div>
+            <div class="arrow" id="top-arrow">∧</div>
+            <div class="arrow" id="down-arrow">∨</div>
+            <div id="elements">
+
+            </div>
+        </div>
+    </div>
+    {% include 'part/footer.twig' %}
+    {% include 'part/scripts.twig' %}
+</body>
+</html>

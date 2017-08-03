@@ -1,0 +1,21 @@
+{
+  "name": "epic-empires",
+  "authors": [
+    ""
+  ],
+  "description": "",
+  "main": "",
+  "license": "",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "material-preloader": "artur99/Material-Preloader",
+    "sweetalert": "^1.1.3"
+  }
+}

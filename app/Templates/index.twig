@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {%set fulltitle = 'Epic Empires'%}
+    {% include 'part/head.twig' %}
+</head>
+<body>
+    <div class="inner">
+        <div class="accountbox">
+            <h1>Epic Empires - A brand new MMO</h1>
+            <div class="left">
+                <form action="#" class="form1" id="form-login" method="POST">
+                    <h2>Login to play</h2>
+                    <label for="">Username:</label><br>
+                    <input type="text" name="username" class="input1" required><br>
+                    <label for="">Password:</label><br>
+                    <input type="password" name="password" class="input1" required><br>
+                    <input type="submit" class="button1" value="Login">
+                </form>
+            </div>
+            <div class="right">
+                <form action="" class="form1" id="form-signup" method="POST">
+                    <h2>Register for free</h2>
+                    <label for="">Username:</label><br>
+                    <input type="text" name="username" class="input1" required><br>
+                    <label for="">Email:</label><br>
+                    <input type="text" name="email" class="input1" required><br>
+                    <label for="">Password:</label><br>
+                    <input type="password" name="password" class="input1" required><br>
+                    <label for="">Confirm Password:</label><br>
+                    <input type="password" name="password2" class="input1" required><br>
+                    <input type="submit" class="button1" value="Sign Up">
+                </form>
+            </div>
+        </div>
+    </div>
+    {% include 'part/footer.twig' %}
+    {% include 'part/scripts.twig' %}
+</body>
+</html>

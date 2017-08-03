@@ -1,0 +1,25 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<link href="{{asset("components/data.css")}}" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Julee" rel="stylesheet">
+<link rel="shortcut icon" type="image/x-icon" href="{{asset("img/ui/fav.png")}}">
+<meta name="theme-color" content="#00c300">
+{% if fulltitle is defined %}
+    {% set ctitle = fulltitle %}
+{% else %}
+    {% set ctitle = title is defined?title~' | '~app['conf.title']:app['conf.title']%}
+{% endif %}
+<title>{{ctitle}}</title>
+{% if meta is defined %}
+    {% if meta.meta is defined %}
+        {% for key,itm in meta.meta %}
+        <meta name="{{key}}" content="{{itm}}">
+        {% endfor %}
+    {% endif %}
+    {% if meta.og is defined %}
+        {% for key,itm in meta.og %}
+        <meta property="og:{{key}}" content="{{itm}}">
+        {% endfor %}
+    {% endif %}
+{% endif %}

@@ -1,0 +1,8 @@
+<script type="text/javascript">
+    var csrftoken = '{{csrftoken('main')}}';
+    var currenturl = '{{app.request.attributes.get('_route')|trim('_')}}';
+    {% if user is defined %}
+    var user_id = {{user.id}}
+    {% endif %}
+</script>
+<script src="{{asset("components/data.js")}}"></script>
