@@ -10,8 +10,8 @@ body.game{
     display: flex;
     flex-direction: row;
     .menu{
-        flex-basis: 225px;
-        width: 225px;
+        flex-basis: 240px;
+        width: 240px;
         height: 100%;
         background: url('../img/bgw.png'), @brown1;
         border: 23px solid @brown1;
@@ -76,6 +76,11 @@ body.game{
 }
 .menuh{
     text-align: center;
+    height: 100%;
+    padding: 0 5px;
+    &:first-child{
+        overflow-y: scroll;
+    }
     h2{
         font-size: 18px;
         margin: 0;
@@ -134,8 +139,43 @@ body.game{
     span{
         text-align: left;
         display: inline-block;
-        width: 45px;
+        width: 40px;
         vertical-align: bottom;
         margin-bottom: 5px;
     }
+}
+.accordion{
+    text-align: left;
+    background: @brown1;
+    color: white;
+    padding: 4px;
+    border: 2px solid rgba(0, 0, 0, 0.4);
+    border-radius: 5px;
+    margin: 5px 0;
+    h3{
+        margin: 0 5px;
+        cursor: pointer;
+    }
+    h4{
+        margin: 0;
+        margin-top: 4px;
+    }
+    p{
+        margin: 0;
+        font-size: 14px;
+    }
+    .item{
+        display: none;
+    }
+    .accordion-data{
+        display: none;
+        padding: 4px;
+        > div{
+            margin-bottom: 10px;
+        }
+    }
+}
+.buildings .res img{
+    width: 30px;
+    margin: -10px -5px;
 }

@@ -186,8 +186,19 @@ class UserModel extends BaseModel{
         $stmt->bindValue('uid', $user_id);
         $stmt->execute();
         $cities = $stmt->fetchAll();
+
+        $bd = \Misc\StaticData::buildingData();
+
         foreach($cities as $k => $city){
             $cities[$k]['r_max'] = $city['level'] == 2 ? 2000 : 500;
+
+            $lv = $city['b_barracks']+1;
+
+            $cities[$k]['b_barracks2']['time'] = isset($bd['barracks'][$lv]) ? $bd['barracks'][$lv]['time'] : -1;
+            $cities[$k]['b_barracks2']['costs'] = isset($bd['barracks'][$lv]) ? $bd['barracks'][$lv]['costs'] : -1;
+
+            $cities[$k]['b_academy2']['time'] = isset($bd['academy'][$lv]) ? $bd['academy'][$lv]['time'] : -1;
+            $cities[$k]['b_academy2']['costs'] = isset($bd['academy'][$lv]) ? $bd['academy'][$lv]['costs'] : -1;
         }
         return $cities;
     }

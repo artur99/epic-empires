@@ -26,7 +26,7 @@ function fillWithEnemyCity(city_id){
     var htmlc = '';
     htmlc += '<h2>'+city_data.username+'</h2>'
     htmlc += '<img src="/assets/img/items/city'+city_data.level+'.png" alt="" class="cityimage">';
-    htmlc += '<p class="textp">City 1</p>';
+    htmlc += '<p class="textp">City 1 ('+city_data.points+')</p>';
     $("#selected-city-show").html(htmlc);
 }
 function fillWithMyCity(city_id){
@@ -34,7 +34,7 @@ function fillWithMyCity(city_id){
     var htmlc = '';
     htmlc += '<h2>'+city_data.username+'</h2>'
     htmlc += '<img src="/assets/img/items/city'+city_data.level+'.png" alt="" class="cityimage">';
-    htmlc += '<p class="textp">City 1</p>';
+    htmlc += '<p class="textp">City 1 ('+city_data.points+')</p>';
     htmlc += '<p class="textp2">- This is your city -</p>';
     $("#selected-city-show").html(htmlc);
 }
