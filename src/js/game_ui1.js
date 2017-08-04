@@ -96,7 +96,7 @@ function drawMyCities(){
         var x1 = (d.loc_x - 0.5) * mapSquareSize;
         var y1 = (d.loc_y - 0.5) * mapSquareSize;
         var clss = '';
-        if(!selectedCity && d.id == currentCityId){
+        if(!selectedCity && d.id == currentCityId || selectedCity == d.id){
             clss ='city-selected';
         }
         drawItem('city'+d.level, x1, y1, 'city-on-map my-city', 'city-div my-city '+clss, 'city-'+d.id);

@@ -157,10 +157,48 @@ class StaticData{
                 'barracks' => 'Upgrading Barracks',
                 'house' => 'Upgrading House'
             ],
-            'attack' => [
-                'attack' => 'Attacking'
+            'attack' => 'Attacking',
+            'train' => [
+                'unit' => 'Training a Terrain Troop',
+                'archer' => 'Training an Archer'
             ]
         ];
         return $tn;
+    }
+    function warVars(){
+        $dt = [];
+        $dt['distanceRate'] = 43;
+        $dt['spmRate'] = 5.3;
+        $dt['costs'] = [
+            'food' => 400,
+            'gold' => 300
+        ];
+        return $dt;
+    }
+    function unitsData(){
+        $dt = [];
+
+        $dt['unit'] = [
+            'time' => 5,
+            'costs' => [
+                'gold' => 50,
+                'food' => 100
+            ],
+            'result' => [
+                'unit' => 1
+            ]
+        ];
+        $dt['archer'] = [
+            'time' => 25,
+            'costs' => [
+                'gold' => 150,
+                'food' => 200
+            ],
+            'result' => [
+                'archer' => 1
+            ]
+        ];
+
+        return $dt;
     }
 }

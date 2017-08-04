@@ -191,6 +191,7 @@ class UserModel extends BaseModel{
         $bd = \Misc\StaticData::buildingData();
         $rd = \Misc\StaticData::resourceData();
         $mxs = \Misc\StaticData::resMax();
+        $unt = \Misc\StaticData::unitsData();
 
         foreach($cities as $k => $city){
             $cities[$k]['r_max'] = $mxs[$city['level']];
@@ -209,6 +210,8 @@ class UserModel extends BaseModel{
             $cities[$k]['builddata']['academy'] = @$bd['academy'][$city['b_academy']+1];
             $cities[$k]['builddata']['house'] = @$bd['house'][$city['b_house']+1];
             $cities[$k]['builddata']['center'] = @$bd['center'][$city['b_center']+1];
+
+            $cities[$k]['unitsdata'] = $unt;
         }
         return $cities;
     }

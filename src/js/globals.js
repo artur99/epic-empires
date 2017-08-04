@@ -7,4 +7,4 @@ var currentCity = 0;
 var selectedCity = null;
 var currentTasks = null;
 var distanceRate = 43;
-var spmRate = 1.3;
+var spmRate = 5.3;

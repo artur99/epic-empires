@@ -10,8 +10,7 @@ function InitialUIHandler(){
 function recursiveUiUpdate(cb){
     getUserInfo(function(){
         uiUpdate();
-        drawMyCities();
-        drawOtherCities();
+        drawAll();
         uiBuildingsUpdate();
 
         updateTaskList(function(){
@@ -23,8 +22,8 @@ function recursiveUiUpdate(cb){
 }
 function uiUpdate(){
     var cd = userCities[currentCity];
-    $('.cityimage').attr('src', '/assets/img/items/city'+cd.level+'.png');
-    $("#city-name").html('City 1 ('+cd.points+' p)');
+    $('.mme .cityimage').attr('src', '/assets/img/items/city'+cd.level+'.png');
+    $(".mme #city-name").html('City 1 ('+cd.points+' p)');
     $("#res-food").html(cd.r_food);
     $("#res-food").prev().attr('title', 'Food | Max: '+cd.r_max);
     $("#res-gold").html(cd.r_gold);
@@ -73,6 +72,18 @@ function uiBuildingsUpdate(){
         }
         $("#get-"+i).find('.result').html(html);
     }
+    $("#troops-"+i).find('');
+    for(var i in cd.unitsdata){
+        var v = cd.unitsdata[i];
+        $("#troops-"+i).find('.time').html(v.time.toString()+' s');
+        var html = '';
+        for(var j in v.costs){
+            var k = v.costs[j]; //each resource
+            html += '<img src="/assets/img/items/res_'+j+'.png"> '+k+' &nbsp;'
+        }
+
+        $("#troops-"+i).find('.res').html(html);
+    }
 }
 function uiUpdateTaskList(cb){
     var ct = Math.floor(Date.now() / 1000);
@@ -84,8 +95,16 @@ function uiUpdateTaskList(cb){
         html += '<h4>'+v.taskname+'</h4>';
         if(v.workers > 0)
             html += '<p>Workers: <img src="/assets/img/items/res_workers.png" class="wrkic"> <span class="res">'+v.workers+'</span></p>';
+        if(v.type == 'attack'){
+            var units = JSON.parse(v.param);
+            html += '<p>Units: ';
+            html += '<img src="/assets/img/items/res_unit.png" class="unit-icon2"> '+units.units+' &nbsp; '
+            html += '<img src="/assets/img/items/res_archer.png" class="unit-icon2"> '+units.archers+' &nbsp; '
+            html += '</p>';
+        }
         html += '<p>Time Left: <span class="tleft" data-timee="'+v.time_e+'">'+(v.time_e - ct)+' s</span></p>';
         if(v.result){
+            v.result = JSON.parse(v.result);
             html += '<p>Result: ';
             for(j in v.result){
                 var v2 = v.result[j];
@@ -93,7 +112,9 @@ function uiUpdateTaskList(cb){
             }
             html += '</p>';
         }
-        html += '<button class="upgrade btn1" data-id="canceltask-'+v.id+'">Cancel</button>';
+        if(v.type != 'attack'){
+            html += '<button class="upgrade btn1" data-id="canceltask-'+v.id+'">Cancel</button>';
+        }
         html += '</div>';
         $(".tasklist .accordion-data").append(html);
     }
@@ -125,6 +146,10 @@ $(document).on('click', '.upgrade', function(e){
         startTask('attack', dt2[1]);
     }else if(dt2[0] == 'canceltask'){
         stopTask(dt2[1]);
+    }else if(dt2[0] == 'war'){
+        startWar(dt2[1]);
+    }else if(dt2[0] == 'train'){
+        startTask('train', dt2[1]);
     }
 });
 
@@ -151,6 +176,25 @@ function stopTask(task_id){
         if(res.type == 'error'){
             error_txt(res.text, res.title);
         }else{
+            showTaskList();
+        }
+    })
+}
+function startWar(target_id){
+    var units = $('#attack-form .units-in').val();
+    var archers = $('#attack-form .archers-in').val();
+    ajaxPost('/ajax/game/start_war', {
+        city_id: currentCityId,
+        target_id: target_id,
+        units: units,
+        archers: archers
+    }, function(data){
+        res = parseAjaxData(data);
+        if(res.type == 'error'){
+            error_txt(res.text, res.title);
+        }else{
+            $('#attack-form .units-in').val('');
+            $('#attack-form .archers-in').val('');
             showTaskList();
         }
     })

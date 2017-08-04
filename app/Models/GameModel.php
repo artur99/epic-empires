@@ -25,6 +25,16 @@ class GameModel extends BaseModel{
         }
         return $r;
     }
+    function getCityInfo($cid){
+        $stmt = $this->db->prepare("SELECT cities.*, users.username FROM cities INNER JOIN users ON cities.user_id = users.id WHERE cities.id = :cid LIMIT 1");
+        $stmt->bindValue('cid', $cid);
+        $stmt->execute();
+        $r = $stmt->fetch();
+        if(!isset($r['id'])){
+            return false;
+        }
+        return $r;
+    }
 
     function addTask($city_id, $user_id, $task, $param){
         if(!($city_data = $this->checkUserCity($user_id, $city_id))) return $this->err2();
@@ -32,6 +42,8 @@ class GameModel extends BaseModel{
             return $this->addResourceTask($city_data, $param);
         }elseif($task == 'build' && in_array($param, ['center', 'academy', 'house', 'barracks'])){
             return $this->addBuildTask($city_data, $param);
+        }elseif($task == 'train' && in_array($param, ['unit', 'archer'])){
+            return $this->addUnitTask($city_data, $param);
         }else{
             return [
                 'type' => 'error',
@@ -95,6 +107,41 @@ class GameModel extends BaseModel{
         ];
     }
 
+    private function addUnitTask($city_data, $param){
+        $ud = \Misc\StaticData::unitsData();
+        $required = $ud[$param];
+        $costs = isset($required['costs']) ? $required['costs'] : null;
+        $req2['workers'] = isset($required['workers']) ? $required['workers'] : 0;
+        $req2['food'] = isset($costs['food']) ? $costs['food'] : 0;
+        $req2['wood'] = isset($costs['wood']) ? $costs['wood'] : 0;
+        $req2['gold'] = isset($costs['gold']) ? $costs['gold'] : 0;
+        $req2['time'] = isset($required['time']) ? $required['time'] : 0;
+        $req2['result'] = isset($required['result']) ? $required['result'] : null;
+        $err = false;
+        if(intval($city_data['b_barracks']) <= 0){
+            $err = 'You must first build a barrack';
+        }elseif($param == 'archer' && intval($city_data['b_barracks']) <= 1){
+            $err = 'Your barrack must have level 2 to train archers';
+        }elseif(intval($city_data['r_food']) < $req2['food']){
+            $err = 'You don\'t have enough food for this';
+        }elseif(intval($city_data['r_wood']) < $req2['wood']){
+            $err = 'You don\'t have enough wood for this';
+        }elseif(intval($city_data['r_gold']) < $req2['gold']){
+            $err = 'You don\'t have enough gold for this';
+        }else{
+            $this->resUpdate($city_data['id'], -$req2['food'], -$req2['wood'], -$req2['gold'], -$req2['workers']);
+            $this->startTask($city_data['id'], 'train', $param, 0, $required['time'], $required['result']);
+            return [
+                'type' => 'success',
+                'text' => 'Task started successfuly'
+            ];
+        }
+        return [
+            'type' => 'error',
+            'text' => $err
+        ];
+    }
+
     function buidTaskExists($city_id, $param){
         $stmt = $this->db->prepare("SELECT id FROM tasks WHERE city_id = :cid AND param = :param LIMIT 1");
         $stmt->bindValue('cid', $city_id);
@@ -107,18 +154,65 @@ class GameModel extends BaseModel{
         return true;
     }
 
-    function resUpdate($cid, $food = 0, $wood = 0, $gold = 0, $workers = 0){
+    function startWar($uid, $cid, $tid, $units, $archers){
+        if(!($city_data = $this->checkUserCity($uid, $cid))) return $this->err2();
+        $err = false;
+        $units = intval($units);
+        $archers = intval($archers);
+        $cst = \Misc\StaticData::warVars()['costs'];
+        if($units == 0 && $archers == 0){
+            $err = 'Please select at least one unit to send this attack';
+        }elseif($city_data['units'] < $units){
+            $err = 'You don\'t have enough units to send this attack';
+        }elseif($city_data['archers'] < $archers){
+            $err = 'You don\'t have enough archers to send this attack';
+        }elseif(isset($cst['gold']) && $city_data['r_gold'] < $cst['gold']){
+            $err = 'You don\'t have enough gold to send this attack';
+        }elseif(isset($cst['wood']) && $city_data['r_wood'] < $cst['wood']){
+            $err = 'You don\'t have enough wood to send this attack';
+        }elseif(isset($cst['food']) && $city_data['r_food'] < $cst['food']){
+            $err = 'You don\'t have enough food to send this attack';
+        }elseif($city_data['r_gold'] < 400){
+            $err = 'You don\'t have enough food to send this attack';
+        }else{
+            $target_data = $this->getCityInfo($tid);
+            $distance = sqrt(pow($target_data['loc_x'] - $city_data['loc_x'], 2) + pow($target_data['loc_x'] - $city_data['loc_x'], 2));
+            $winfo = \Misc\StaticData::warVars();
+            $dist_r = $distance * $winfo['distanceRate'];
+            $time = $dist_r * $winfo['spmRate'];
+            $param = [
+                'units' => $units,
+                'archers' => $archers
+            ];
+            $this->resUpdate($cid, isset($cst['food'])?-$cst['food']:0, isset($cst['wood'])?-$cst['wood']:0, isset($cst['gold'])?-$cst['gold']:0, 0, -$units, -$archers);
+            $this->startTask($cid, 'attack', $param, 0, $time, $target_data['username'], $tid);
+            return [
+                'type' => 'success',
+                'text' => 'Attack sent with success'
+            ];
+        }
+        return [
+            'type' => 'error',
+            'text' => $err
+        ];
+    }
+
+    function resUpdate($cid, $food = 0, $wood = 0, $gold = 0, $workers = 0, $units = 0, $archers = 0){
         $food = intval($food);
         $wood = intval($wood);
         $gold = intval($gold);
         $workers = intval($workers);
+        $units = intval($units);
+        $archers = intval($archers);
         $cid = intval($cid);
 
-        $stmt = $this->db->prepare("UPDATE cities SET r_food = r_food + :food, r_wood = r_wood + :wood, r_gold = r_gold + :gold, r_workers = r_workers + :workers WHERE id = :cid");
+        $stmt = $this->db->prepare("UPDATE cities SET r_food = r_food + :food, r_wood = r_wood + :wood, r_gold = r_gold + :gold, r_workers = r_workers + :workers, units = units + :units, archers = archers + :archers WHERE id = :cid");
         $stmt->bindValue('food', $food);
         $stmt->bindValue('wood', $wood);
         $stmt->bindValue('gold', $gold);
         $stmt->bindValue('workers', $workers);
+        $stmt->bindValue('units', $units);
+        $stmt->bindValue('archers', $archers);
         $stmt->bindValue('cid', $cid);
         $stmt->execute();
 
@@ -130,6 +224,12 @@ class GameModel extends BaseModel{
         $time_e = time() + $time;
         $city_id = intval($city_id);
         $workers = intval($workers);
+        if(is_array($param)){
+            $param = json_encode($param);
+        }
+        if($target){
+            $target = intval($target);
+        }
 
         $stmt = $this->db->prepare("INSERT INTO tasks (type, city_id, workers, target, time_s, time_e, param, result) VALUES (:type, :city_id, :workers, :target, :time_s, :time_e, :param, :result)");
         $stmt->bindValue('type', $type);
@@ -158,24 +258,31 @@ class GameModel extends BaseModel{
         $tnd = \Misc\StaticData::taskNames();
         $rd = \Misc\StaticData::resourceData();
         foreach($results as $k => $r){
-            $results[$k]['taskname'] = $tnd[$r['type']][$r['param']];
+            $results[$k]['taskname'] = is_array($tnd[$r['type']])?$tnd[$r['type']][$r['param']]:$tnd[$r['type']];
             if($r['type'] == 'get'){
                 $results[$k]['result'] = $rd[$ac_level][$r['param']]['result'];
             }elseif($r['type'] == 'build'){
                 $results[$k]['result'] = null;//$rd[$ac_level][$r['param']]['result'];
+            }elseif($r['type'] == 'attack'){
+                $results[$k]['result'] = null;
             }
         }
         return $results;
     }
 
     function delTask($task_id, $user_id){
-        $stmt = $this->db->prepare("SELECT tasks.id, cities.user_id as user_id FROM tasks INNER JOIN cities ON cities.id = tasks.city_id WHERE tasks.id = :id LIMIT 1");
+        $stmt = $this->db->prepare("SELECT tasks.*, cities.user_id as user_id FROM tasks INNER JOIN cities ON cities.id = tasks.city_id WHERE tasks.id = :id LIMIT 1");
         $stmt->bindValue('id', $task_id);
         $stmt->execute();
         $r = $stmt->fetch();
         if(!isset($r['user_id']) || $r['user_id'] != $user_id){
             return $this->err2();
         }else{
+            if($r['type'] == 'building' || $r['type'] == 'get'){
+                $stmt = $this->db->prepare("UPDATE cities SET r_workers = r_workers + :wk LIMIT 1");
+                $stmt->bindValue('wk', intval($r['workers']));
+                $stmt->execute();
+            }
             $stmt2 = $this->db->prepare("DELETE FROM tasks WHERE id = :id LIMIT 1");
             $stmt2->bindValue('id', $task_id);
             $stmt2->execute();

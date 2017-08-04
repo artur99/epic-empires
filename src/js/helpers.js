@@ -18,3 +18,6 @@ function rand(min, max, no, series){
     var dif = parseInt((max-min) * fin);
     return dif + min;
 }
+function htmlentities(txt){
+    return $('<div>').html(txt).text();
+}

@@ -26,10 +26,10 @@ function getCityData(city_id){
 function fillWithEnemyCity(city_id){
     var city_data = getCityData(city_id);
     var htmlc = '';
-    $("#selected-city-show").find('.user-name').html(city_data.username).data('id', city_data.id);
+    $("#selected-city-show").find('.user-name').html(htmlentities(city_data.username)).data('id', city_data.id);
     $("#selected-city-show").find('.cityimage').attr('src', '/assets/img/items/city'+city_data.level+'.png');
     $("#selected-city-show").find('.city-name').html('City 1 ('+city_data.points+')');
-    $("#attack-form").find('.upgrade').data('id', city_id);
+    $("#attack-form").find('.upgrade').data('id', 'war-'+city_id);
     var dist = distanceRate * cityDist(currentCityId, city_id);
     var time = parseInt(dist * spmRate);
     $("#attack-form").find('.dist').html(dist+' miles');
@@ -38,7 +38,7 @@ function fillWithEnemyCity(city_id){
 }
 function fillWithMyCity(city_id){
     var city_data = getCityData(city_id);
-    $("#selected-own-city-show").find('.user-name').html(city_data.username).data('id', city_data.id);
+    $("#selected-own-city-show").find('.user-name').html(htmlentities(city_data.username)).data('id', city_data.id);
     $("#selected-own-city-show").find('.cityimage').attr('src', '/assets/img/items/city'+city_data.level+'.png');
     $("#selected-own-city-show").find('.city-name').html('City 1 ('+city_data.points+')');
 }
