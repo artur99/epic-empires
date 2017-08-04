@@ -26,19 +26,22 @@ function addReports(init){
     if(!listReports || listReports.length == 0){
         $(".report-list .accordion-data").html('<p>Sorry, no reports to show!</p>')
     }else $(".report-list .accordion-data").html('');
-    for(var i in listReports){
-        var v = listReports[i];
-        html1 = '<div>';
-        html1 += '<h4>'+v.title+'</h4>';
-        html1 += '<p>'+v.content+'</p>';
-        html1 += '</div>';
-        if(init){
-            $(".report-list .accordion-data").append(html1);
-            if(v.id > last_rep_read) last_rep_read = v.id;
-        }else{
-            if(v.id > last_rep_read){
-                last_rep_read = v.id;
-                $(".report-list .accordion-data").prepend(html1);
+    if(listReports[0].id != last_rep_read){
+        last_rep_read = listReports[0].id;
+        for(var i in listReports){
+            v = listReports[i];
+            html1 = '<div>';
+            html1 += '<h4>'+v.title+'</h4>';
+            html1 += '<p>'+v.content+'</p>';
+            html1 += '</div>';
+            if(init){
+                $(".report-list .accordion-data").append(html1);
+                if(v.id > last_rep_read) last_rep_read = v.id;
+            }else{
+                if(v.id > last_rep_read){
+                    last_rep_read = v.id;
+                    $(".report-list .accordion-data").prepend(html1);
+                }
             }
         }
     }

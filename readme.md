@@ -1,5 +1,6 @@
 # Epic Empires
-
+## About
+This is a Strategy MMO online game built in PHP.
 ## Build
 ```
 $ npm install -g bower grunt-cli

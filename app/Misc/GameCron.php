@@ -68,6 +68,7 @@ class GameCron{
                 $p1_lost['archers'] = -max(0, $units0[0]['archers'] - max(0, $battle[0]['archers']));
                 $p2_lost['units'] = -max(0, $units0[1]['units'] - max(0, $battle[1]['units']));
                 $p2_lost['archers'] = -max(0, $units0[1]['archers'] - max(0, $battle[1]['archers']));
+                // var_dump($p1_lost, $p2_lost);die();
 
                 $food = $tq['r_food'];
                 $wood = $tq['r_wood'];
