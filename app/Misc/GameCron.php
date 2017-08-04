@@ -64,21 +64,21 @@ class GameCron{
                 ];
                 $battle = $this->runBattle($units1, $task['city_level'], $units2, $tq['level']);
                 $units0 = [$units1, $units2];
-                $p1_lost['units'] = -($units0[0]['units'] - $battle[0]['units']);
-                $p1_lost['archers'] = -($units0[0]['archers'] - $battle[0]['archers']);
-                $p2_lost['units'] = -($units0[1]['units'] - $battle[1]['units']);
-                $p2_lost['archers'] = -($units0[1]['archers'] - $battle[1]['archers']);
+                $p1_lost['units'] = -max(0, $units0[0]['units'] - max(0, $battle[0]['units']));
+                $p1_lost['archers'] = -max(0, $units0[0]['archers'] - max(0, $battle[0]['archers']));
+                $p2_lost['units'] = -max(0, $units0[1]['units'] - max(0, $battle[1]['units']));
+                $p2_lost['archers'] = -max(0, $units0[1]['archers'] - max(0, $battle[1]['archers']));
 
+                $food = $tq['r_food'];
+                $wood = $tq['r_wood'];
+                $gold = $tq['r_gold'];
+                $prd = ['food' => $food, 'wood' => $wood, 'gold' => $gold];
                 if($battle[2] == true){
                     //He won the battle
-                    $food = $tq['r_food'];
-                    $wood = $tq['r_wood'];
-                    $gold = $tq['r_gold'];
-                    $prd = ['food' => $food, 'wood' => $wood, 'gold' => $gold];
 
                     $max = $maxes[$task['city_level']];
-                    $this->resUpdate($ta['id'], $food, $wood, $gold, 0, 0, $max, $battle[0]['units'], $battle[0]['archers']);
-                    $this->resUpdate($tq['id'], -$food, -$wood, -$gold, 0, 0, 99999, $p2_lost['units'], $p2_lost['archers']);
+                    $this->resUpdate($tq['id'], $food, $wood, $gold, 0, 0, $max, $battle[0]['units'], $battle[0]['archers']);
+                    $this->resUpdate($ta['id'], -$food, -$wood, -$gold, 0, 0, 99999, $p2_lost['units'], $p2_lost['archers']);
                     $this->sendReport($ta['user_id'], $ta['id'], 'won', $tq['username'], [$units0, $battle, $prd], $task['time_e']);
                     $this->sendReport($tq['user_id'], $tq['id'], 'attacked', $ta['username'], [$units0, $battle, $prd], $task['time_e']);
 
@@ -86,8 +86,8 @@ class GameCron{
                     $stmt->bindValue('id', $task['id']);
                     $stmt->execute();
                 }else{
-                    $this->resUpdate($ta['id'], 0, 0, 0, 0, 0, 99999, $p1_lost['units'], $p1_lost['archers']);
-                    $this->resUpdate($tq['id'], 0, 0, 0, 0, 0, 99999, $p2_lost['units'], $p2_lost['archers']);
+                    $this->resUpdate($tq['id'], 0, 0, 0, 0, 0, 99999, $p1_lost['units'], $p1_lost['archers']);
+                    // $this->resUpdate($ta['id'], 0, 0, 0, 0, 0, 99999, $p2_lost['units'], $p2_lost['archers']);
 
                     $this->sendReport($ta['user_id'], $ta['id'], 'lost', $tq['username'], [$units0, $battle], $task['time_e']);
                     $this->sendReport($tq['user_id'], $tq['id'], 'resisted', $ta['username'], [$units0, $battle], $task['time_e']);
@@ -146,24 +146,42 @@ class GameCron{
         $stmt->execute();
     }
     function runBattle($units1, $level1, $units2, $level2){
-        $units2['units'] -= intval($units1['archers']*rand(3, 5)/10);
-        $units1['units'] -= intval($units2['archers']*min(1, $units2['units']/10)*rand(4, 6)/10);
-        if($units2['units'] < 0) $units2['units'] = 0;
-        if($units1['units'] < 0) $units1['units'] = 0;
+        // $units2['units'] = max(0, $units2['units'] - intval($units1['archers']*rand(3, 5)/10));
+        // $units1['units'] = max(0, $units1['units'] - intval($units2['archers']*min(1, $units2['units']/10)*rand(4, 6)/10));
+        // if($units2['units'] < 0) $units2['units'] = 0;
+        // if($units1['units'] < 0) $units1['units'] = 0;
+        //
+        // $units1['archers'] = max(0, $units1['archers'] - intval($units2['units']*rand(7, 8)/10));
+        //
+        // while($units1['units'] > 0 && $units2['units'] > 0){
+        //     $units1['units'] = max(0, $units1['units'] - 1+2*$units2['archers']*rand(3, 5)/10);
+        //     $units2['units'] = max(0, $units2['units'] - 1+2*$units1['archers']*rand(3, 5)/10);
+        // }
+        // if($units1['archers'] > 0){
+        //     $units2['units'] = max(0, $units2['units'] - $units1['archers']*2/3);
+        //     $units1['archers'] = max(0, $units1['archers'] - $units2['units']*8/10);
+        // }
+        // while($units1['units'] + $units1['archers'] > 0 && $units2['units'] + $units2['archers'] > 0){
+        //     $p1 = $units1['units']*1.1 + $units1['archers']*0.9;
+        //     $p2 = $units2['units']*1.1 + $units2['archers']*0.9;
+        //     $units1['units'] = max(0, $units1['units'] - $p2);
+        //     $units2['units'] = max(0, $units2['units'] - $p1);
+        //     $units1['archers'] = max(0, $units1['archers'] - $p2*$level2);
+        //     $units2['archers'] = max(0, $units2['archers'] - $p1*$level1);
+        // }
+        // if($units1['units'] < 0) $units1['units'] = 0;
+        // if($units2['units'] < 0) $units2['units'] = 0;
+        $units1['units'] -= min($units1['units'], $units2['units']);
+        $units2['units'] -= min($units1['units'], $units2['units']);
 
-        $units1['archers'] -= intval($units2['units']*rand(7, 8)/10);
-        if($units1['archers'] < 0) $units1['archers'] = 0;
-
-        while($units1['units'] > 0 && $units2['units'] > 0){
-            $units1['units'] = max(0, $units1['units'] - 1+2*$units2['archers']*rand(3, 5)/10);
-            $units2['units'] = max(0, $units2['units'] - 1+2*$units1['archers']*rand(3, 5)/10);
-        }
+        $units1['archers'] -= min($units1['archers'], $units2['archers']);
+        $units2['archers'] -= min($units1['archers'], $units2['archers']);
 
         $won = false;
         if($units2['units'] + $units2['archers'] == 0 && $units1['units'] + $units1['archers'] > 0){
             $won = true;
         }
-
+        // var_dump($units1, $units2, $won);die();
         return [$units1, $units2, $won];
     }
     function sendReport($user_id, $city_id, $type, $user2name, $info, $time){

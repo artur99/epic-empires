@@ -4,6 +4,7 @@ function InitialUIHandler(){
     uiBuildingsUpdate();
     updateTaskList(function(){
         checkForAttacks();
+        getReports();
         uiUpdateTaskList();
         $(".tasklist .accordion-data").slideDown();
     });
@@ -209,4 +210,7 @@ function showTaskList(){
     })
 }
 setInterval(recursiveUiUpdate, 15000);
-setInterval(checkForAttacks, 5000);
+setInterval(function(){
+    checkForAttacks();
+    getReports();
+}, 4000);

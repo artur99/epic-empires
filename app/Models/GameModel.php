@@ -307,6 +307,14 @@ class GameModel extends BaseModel{
             'outgoing' => $stmt2->fetchAll(),
         ];
     }
+    function getReports($uid, $cid){
+        if(!($city_data = $this->checkUserCity($uid, $cid))) return $this->err2();
+        $stmt = $this->db->prepare("SELECT * FROM reports WHERE city_id = :cid ORDER BY time DESC");
+        $stmt->bindValue('cid', $cid);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
 
     function autoGameCron(){
         $cron = new \Misc\GameCron($this->db);

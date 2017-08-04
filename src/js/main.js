@@ -71,6 +71,13 @@ function error_txt(txt, title){
         txt +='.';
     swal(title, txt, 'error');
 }
+function info_txt(txt, title){
+    if(typeof title != 'string')
+        title = 'Hi!';
+    if(txt[txt.length-1] != '.' && txt[txt.length-1] != '!')
+        txt +='.';
+    swal(title, txt, 'info');
+}
 function succ_txt(txt, title){
     if(typeof title != 'string')
         title = 'Done!';

@@ -132,7 +132,7 @@ function drawAttacks(){
                 continue;
             }
             // console.log(my_city_x, my_city_y, enemy_city_x, enemy_city_y);
-            var prec = (0.6 + 0.4*((180 - time_left) / 180));
+            var prec = (0.5 + 0.5*((180 - time_left) / 180));
             var real_x = (my_city_x * prec + enemy_city_x * (1-prec));
             var real_y = (my_city_y * prec + enemy_city_y * (1-prec));
 
