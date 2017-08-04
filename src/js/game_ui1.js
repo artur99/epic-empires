@@ -187,8 +187,8 @@ function drawAttacks(){
     if(lone[4] != lone[3]){
         lone[3] = lone[4];
         html1 = '';
-        for(attack in commingAttacks){
-            var d = commingAttacks[attack];
+        for(attack in goingAttacks){
+            var d = goingAttacks[attack];
             html1+='<div data-id="task-'+d.id+'">';
             html1+='<img src="/assets/img/items/army.png" class="atkm-icon" alt="">';
 
