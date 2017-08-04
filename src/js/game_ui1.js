@@ -131,18 +131,81 @@ function drawAttacks(){
                 drawAll();
                 continue;
             }
-            console.log(my_city_x, my_city_y, enemy_city_x, enemy_city_y);
+            // console.log(my_city_x, my_city_y, enemy_city_x, enemy_city_y);
             var prec = (0.6 + 0.4*((180 - time_left) / 180));
             var real_x = (my_city_x * prec + enemy_city_x * (1-prec));
             var real_y = (my_city_y * prec + enemy_city_y * (1-prec));
 
             drawItem('army2', real_x, real_y, 'attack_icon');
+
         }
     }
-    
+
+    lone[2] = JSON.stringify(commingAttacks);
+    if(lone[2] != lone[1]){
+        lone[1] = lone[2];
+        var html1 = '';
+        for(attack in commingAttacks){
+            var d = commingAttacks[attack];
+            html1+='<div data-id="task-'+d.id+'">';
+            html1+='<img src="/assets/img/items/army2.png" class="atkm-icon" alt="">';
+            html1+='<p>- Unknown -<br>Left: <span class="tleft" data-timee="'+d.time_e+'">-</span></p>';
+            html1+='</div>';
+        }
+        $(".in-attacks .accordion-data").html(html1);
+        if(!commingAttacks || commingAttacks.length == 0){
+            $(".in-attacks .accordion-data").html('<p>No runnig task...</p>');
+        }
+    }
+    for(attack in goingAttacks){
+        if(goingAttacks[attack]){
+            var d = goingAttacks[attack];
+            var my_city = getCityData(currentCityId);
+            var my_city_x = (my_city.loc_x - 0.5) * mapSquareSize;
+            var my_city_y = (my_city.loc_y - 0.5) * mapSquareSize;
+            var enemy_city_x = (d.loc_x - 0.5) * mapSquareSize;
+            var enemy_city_y = (d.loc_y - 0.5) * mapSquareSize;
+            var time_left = d.time_e - parseInt(new Date() / 1000);
+            if(time_left <= 0){
+                goingAttacks[attack] = false;
+                drawAll();
+                continue;
+            }
+            var time_total = d.time_e - d.time_s;
+            var prec = time_left / time_total;
+            var real_x = (my_city_x * (prec) + enemy_city_x * (1-prec));
+            var real_y = (my_city_y * (prec) + enemy_city_y * (1-prec));
+
+            drawItem('army', real_x, real_y, 'attack_icon');
+
+
+        }
+    }
+
+    lone[4] = JSON.stringify(goingAttacks);
+
+    if(lone[4] != lone[3]){
+        lone[3] = lone[4];
+        html1 = '';
+        for(attack in commingAttacks){
+            var d = commingAttacks[attack];
+            html1+='<div data-id="task-'+d.id+'">';
+            html1+='<img src="/assets/img/items/army.png" class="atkm-icon" alt="">';
+
+            var units = typeof d.param == 'string' ? JSON.parse(d.param) : d.param;
+            html1+='<p>Units: ';
+            html1+='<img src="/assets/img/items/res_unit.png" class="unit-icon2"> '+units.units+' &nbsp; '
+            html1+='<img src="/assets/img/items/res_archer.png" class="unit-icon2"> '+units.archers+' &nbsp; '
+            html1+='</p>';
+            html1+='<p>Left: <span class="tleft" data-timee="'+d.time_e+'">-</span></p>';
+            html1+='</div>';
+        }
+        $(".out-attacks .accordion-data").html(html1);
+        if(!goingAttacks || goingAttacks.length == 0){
+            $(".out-attacks .accordion-data").html('<p>No runnig task...</p>');
+        }
+    }
 }
-
-
 
 
 

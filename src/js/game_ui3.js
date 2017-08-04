@@ -3,9 +3,9 @@ function checkForAttacks(){
     ajaxPost('/ajax/game/get_attacks', {
         city_id: currentCityId
     }, function(data){
-        if(typeof data[0] != 'undefined'){
-            commingAttacks = data.ingoing;
-            goingAttacks = data.outgoing;
+        commingAttacks = data.ingoing;
+        goingAttacks = data.outgoing;
+        if(typeof data.ingoing[0] != 'undefined'){
             if(!was_set){
                 was_set = 1;
                 attackAlerted = 0;

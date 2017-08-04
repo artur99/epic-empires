@@ -5,6 +5,7 @@ var userCities = null;
 var otherCities = null;
 var currentCity = 0;
 var commingAttacks = goingAttacks = null;
+var lone = [0, 0, 0, 0, 0];
 var attackAlerted = 1;
 var selectedCity = null;
 var currentTasks = null;

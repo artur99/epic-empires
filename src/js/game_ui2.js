@@ -97,7 +97,7 @@ function uiUpdateTaskList(cb){
         if(v.workers > 0)
             html += '<p>Workers: <img src="/assets/img/items/res_workers.png" class="wrkic"> <span class="res">'+v.workers+'</span></p>';
         if(v.type == 'attack'){
-            var units = typeof v.param == 'strig' ? JSON.parse(v.param) : v.param;
+            var units = typeof v.param == 'string' ? JSON.parse(v.param) : v.param;
             html += '<p>Units: ';
             html += '<img src="/assets/img/items/res_unit.png" class="unit-icon2"> '+units.units+' &nbsp; '
             html += '<img src="/assets/img/items/res_archer.png" class="unit-icon2"> '+units.archers+' &nbsp; '
@@ -209,4 +209,4 @@ function showTaskList(){
     })
 }
 setInterval(recursiveUiUpdate, 15000);
-setInterval(checkForAttacks, 3000);
+setInterval(checkForAttacks, 5000);

@@ -297,8 +297,8 @@ class GameModel extends BaseModel{
         $stmt = $this->db->prepare("SELECT tasks.id, tasks.time_e, cities.loc_x, cities.loc_y FROM tasks INNER JOIN cities ON cities.id = tasks.city_id WHERE type = 'attack' AND target = :cid AND (time_e - UNIX_TIMESTAMP()) < 180");
         $stmt->bindValue('cid', $cid);
         $stmt->execute();
-        
-        $stmt2 = $this->db->prepare("SELECT tasks.id, tasks.time_e, cities.loc_x, cities.loc_y FROM tasks INNER JOIN cities ON cities.id = tasks.city_id WHERE type = 'attack' AND city_id = :cid");
+
+        $stmt2 = $this->db->prepare("SELECT tasks.id, tasks.time_e, tasks.time_s, tasks.param, cities.loc_x, cities.loc_y FROM tasks INNER JOIN cities ON cities.id = tasks.target WHERE type = 'attack' AND city_id = :cid");
         $stmt2->bindValue('cid', $cid);
         $stmt2->execute();
 
