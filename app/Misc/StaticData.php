@@ -54,27 +54,45 @@ class StaticData{
         ];
         $b['house'] = [
             '1' => [
-                'time' => 100,
-                'workers' => 3,
+                'time' => 60,
+                'workers' => 2,
                 'costs' => ['food' => 60, 'wood' => 60, 'gold' => 60],
                 'result' => ['workers' => 2, 'points' => 50]
             ],
             '2' => [
-                'time' => 120,
+                'time' => 70,
                 'workers' => 3,
-                'costs' => ['food' => 60, 'wood' => 60, 'gold' => 80],
+                'costs' => ['food' => 100, 'wood' => 100, 'gold' => 80],
                 'result' => ['workers' => 2, 'points' => 100]
             ],
             '3' => [
-                'time' => 140,
-                'workers' => 5,
-                'costs' => ['food' => 60, 'wood' => 60, 'gold' => 800],
+                'time' => 80,
+                'workers' => 3,
+                'costs' => ['food' => 260, 'wood' => 260, 'gold' => 220],
                 'result' => ['workers' => 2, 'points' => 120]
             ],
             '4' => [
-                'time' => 150,
+                'time' => 90,
+                'workers' => 4,
+                'costs' => ['food' => 360, 'wood' => 360, 'gold' => 320],
+                'result' => ['workers' => 3, 'points' => 120]
+            ],
+            '5' => [
+                'time' => 140,
+                'workers' => 4,
+                'costs' => ['food' => 420, 'wood' => 430, 'gold' => 420],
+                'result' => ['workers' => 2, 'points' => 120]
+            ],
+            '6' => [
+                'time' => 160,
                 'workers' => 5,
-                'costs' => ['food' => 60, 'wood' => 60, 'gold' => 1060],
+                'costs' => ['food' => 500, 'wood' => 500, 'gold' => 500],
+                'result' => ['workers' => 4, 'points' => 120]
+            ],
+            '7' => [
+                'time' => 180,
+                'workers' => 5,
+                'costs' => ['food' => 700, 'wood' => 700, 'gold' => 700],
                 'result' => ['workers' => 2, 'points' => 170]
             ]
         ];
@@ -167,7 +185,7 @@ class StaticData{
     }
     function warVars(){
         $dt = [];
-        $dt['distanceRate'] = 43;
+        $dt['distanceRate'] = 12;//43;
         $dt['spmRate'] = 5.3;
         $dt['costs'] = [
             'food' => 400,

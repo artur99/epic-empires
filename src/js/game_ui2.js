@@ -3,6 +3,7 @@ function InitialUIHandler(){
     uiUpdate();
     uiBuildingsUpdate();
     updateTaskList(function(){
+        checkForAttacks();
         uiUpdateTaskList();
         $(".tasklist .accordion-data").slideDown();
     });
@@ -96,7 +97,7 @@ function uiUpdateTaskList(cb){
         if(v.workers > 0)
             html += '<p>Workers: <img src="/assets/img/items/res_workers.png" class="wrkic"> <span class="res">'+v.workers+'</span></p>';
         if(v.type == 'attack'){
-            var units = JSON.parse(v.param);
+            var units = typeof v.param == 'strig' ? JSON.parse(v.param) : v.param;
             html += '<p>Units: ';
             html += '<img src="/assets/img/items/res_unit.png" class="unit-icon2"> '+units.units+' &nbsp; '
             html += '<img src="/assets/img/items/res_archer.png" class="unit-icon2"> '+units.archers+' &nbsp; '
@@ -104,7 +105,8 @@ function uiUpdateTaskList(cb){
         }
         html += '<p>Time Left: <span class="tleft" data-timee="'+v.time_e+'">'+(v.time_e - ct)+' s</span></p>';
         if(v.result){
-            v.result = JSON.parse(v.result);
+            if(typeof v.result == 'string')
+                v.result = JSON.parse(v.result);
             html += '<p>Result: ';
             for(j in v.result){
                 var v2 = v.result[j];
@@ -207,3 +209,4 @@ function showTaskList(){
     })
 }
 setInterval(recursiveUiUpdate, 15000);
+setInterval(checkForAttacks, 3000);

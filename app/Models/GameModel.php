@@ -292,6 +292,21 @@ class GameModel extends BaseModel{
             ];
         }
     }
+    function getAttacks($uid, $cid){
+        if(!($city_data = $this->checkUserCity($uid, $cid))) return $this->err2();
+        $stmt = $this->db->prepare("SELECT tasks.id, tasks.time_e, cities.loc_x, cities.loc_y FROM tasks INNER JOIN cities ON cities.id = tasks.city_id WHERE type = 'attack' AND target = :cid AND (time_e - UNIX_TIMESTAMP()) < 180");
+        $stmt->bindValue('cid', $cid);
+        $stmt->execute();
+        
+        $stmt2 = $this->db->prepare("SELECT tasks.id, tasks.time_e, cities.loc_x, cities.loc_y FROM tasks INNER JOIN cities ON cities.id = tasks.city_id WHERE type = 'attack' AND city_id = :cid");
+        $stmt2->bindValue('cid', $cid);
+        $stmt2->execute();
+
+        return [
+            'ingoing' => $stmt->fetchAll(),
+            'outgoing' => $stmt2->fetchAll(),
+        ];
+    }
 
     function autoGameCron(){
         $cron = new \Misc\GameCron($this->db);

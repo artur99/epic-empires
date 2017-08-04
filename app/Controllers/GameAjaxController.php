@@ -19,7 +19,7 @@ class GameAjaxController implements ControllerProviderInterface{
         $indexController->post('/del_task', [$this, 'delTask']);
 
         $indexController->post('/start_war', [$this, 'startWar']);
-
+        $indexController->post('/get_attacks', [$this, 'getAttacks']);
 
         $this->userModel = new UserModel($app['db'], $app['session']);
         $this->gameModel = new GameModel($app['db'], $app['session']);
@@ -80,6 +80,16 @@ class GameAjaxController implements ControllerProviderInterface{
         $uid = $this->userModel->info()['id'];
 
         $q = $this->gameModel->startWar($uid, $cid, $tid, $units, $archers);
+
+        return new JsonResponse($q);
+    }
+
+    public function getAttacks(Application $app){
+        if(!$this->userModel->in()) return new JsonResponse($this->gameModel->err());
+        $cid = $app['request']->request->get('city_id');
+        $uid = $this->userModel->info()['id'];
+
+        $q = $this->gameModel->getAttacks($uid, $cid);
 
         return new JsonResponse($q);
     }

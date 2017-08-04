@@ -52,16 +52,23 @@ class GameCron{
             }elseif($task['type'] == 'attack'){
                 $ta = $this->getCityInfo($task['city_id']);
                 $tq = $this->getCityInfo($task['target']);
+                $unz = @json_decode($task['param']);
+
                 $units1 = [
-                    'units' => $ta['units'],
-                    'archers' => $ta['archers']
+                    'units' => intval(isset($unz->units)?$unz->units:0),
+                    'archers' => intval(isset($unz->archers)?$unz->archers:0)
                 ];
                 $units2 = [
-                    'units' => $tq['units'],
-                    'archers' => $tq['archers']
+                    'units' => intval($tq['units']),
+                    'archers' => intval($tq['archers'])
                 ];
                 $battle = $this->runBattle($units1, $task['city_level'], $units2, $tq['level']);
                 $units0 = [$units1, $units2];
+                $p1_lost['units'] = -($units0[0]['units'] - $battle[0]['units']);
+                $p1_lost['archers'] = -($units0[0]['archers'] - $battle[0]['archers']);
+                $p2_lost['units'] = -($units0[1]['units'] - $battle[1]['units']);
+                $p2_lost['archers'] = -($units0[1]['archers'] - $battle[1]['archers']);
+
                 if($battle[2] == true){
                     //He won the battle
                     $food = $tq['r_food'];
@@ -70,15 +77,18 @@ class GameCron{
                     $prd = ['food' => $food, 'wood' => $wood, 'gold' => $gold];
 
                     $max = $maxes[$task['city_level']];
-                    $this->resUpdate($ta['city_id'], $food, $wood, $gold, 0, 0, $max, $battle[0]['units'], $battle[0]['archers']);
-                    $this->resUpdate($ta['city_id'], -$food, -$wood, -$gold);
+                    $this->resUpdate($ta['id'], $food, $wood, $gold, 0, 0, $max, $battle[0]['units'], $battle[0]['archers']);
+                    $this->resUpdate($tq['id'], -$food, -$wood, -$gold, 0, 0, 99999, $p2_lost['units'], $p2_lost['archers']);
                     $this->sendReport($ta['user_id'], $ta['id'], 'won', $tq['username'], [$units0, $battle, $prd], $task['time_e']);
                     $this->sendReport($tq['user_id'], $tq['id'], 'attacked', $ta['username'], [$units0, $battle, $prd], $task['time_e']);
 
-                    $stmt = $this->db->prepare("UPDATE tasks WHERE id = :id LIMIT 1");
+                    $stmt = $this->db->prepare("DELETE FROM tasks WHERE id = :id LIMIT 1");
                     $stmt->bindValue('id', $task['id']);
                     $stmt->execute();
                 }else{
+                    $this->resUpdate($ta['id'], 0, 0, 0, 0, 0, 99999, $p1_lost['units'], $p1_lost['archers']);
+                    $this->resUpdate($tq['id'], 0, 0, 0, 0, 0, 99999, $p2_lost['units'], $p2_lost['archers']);
+
                     $this->sendReport($ta['user_id'], $ta['id'], 'lost', $tq['username'], [$units0, $battle], $task['time_e']);
                     $this->sendReport($tq['user_id'], $tq['id'], 'resisted', $ta['username'], [$units0, $battle], $task['time_e']);
                     $stmt = $this->db->prepare("DELETE FROM tasks WHERE id = :id LIMIT 1");
@@ -170,7 +180,7 @@ class GameCron{
             $html1 .='<img src="/assets/img/items/res_archer.png" alt="" class="res-img unit-icon" title="Archer Troops"> ';
             $html1 .='<span>'.$u0[0]['archers'].' -&gt; '.$u1[0]['archers'].'</span> <br>';
             $html1 .='</p>';
-            $html1 = '<p>Defender:<br>';
+            $html1 .= '<p>Defender:<br>';
             $html1 .='<img src="/assets/img/items/res_unit.png" alt="" class="res-img unit-icon" title="Terrain Troops"> ';
             $html1 .='<span>'.$u0[1]['units'].' -&gt; '.$u1[1]['units'].'</span> <br>';
             $html1 .='<img src="/assets/img/items/res_archer.png" alt="" class="res-img unit-icon" title="Archer Troops"> ';

@@ -80,6 +80,9 @@ body.game{
     padding: 0 5px;
     &:first-child{
         overflow-y: scroll;
+        .cityimage.attack{
+            border: 4px solid red;
+        }
     }
     h2{
         font-size: 18px;
@@ -93,7 +96,7 @@ body.game{
         padding: 20px;
         margin-top: 10px;
         margin-bottom: 5px;
-
+        cursor: pointer;
     }
     .textp{
         margin: 0;
@@ -245,4 +248,10 @@ body.game{
         padding: 4px;
         margin-right: -6px;
     }
+}
+.attack_icon{
+	width: 70px!important;
+	background: rgba(255, 255, 0, 0.3)!important;
+	border-radius: 50%;
+	padding: 7px;
 }

@@ -91,7 +91,7 @@ function drawItem(what, x, y, cls1, cls2, did){
 }
 
 function drawMyCities(){
-    for(cityi in userCities){
+    for(var cityi in userCities){
         var d = userCities[cityi];
         var x1 = (d.loc_x - 0.5) * mapSquareSize;
         var y1 = (d.loc_y - 0.5) * mapSquareSize;
@@ -103,7 +103,7 @@ function drawMyCities(){
     }
 }
 function drawOtherCities(x, y, lvl){
-    for(cityi in otherCities){
+    for(var cityi in otherCities){
         var d = otherCities[cityi];
         if(d.user_id == user_id) continue;
         var x1 = (d.loc_x - 0.5) * mapSquareSize;
@@ -114,6 +114,32 @@ function drawOtherCities(x, y, lvl){
         }
         drawItem('city'+d.level, x1, y1, 'city-on-map other-city', 'city-div other-city '+clss, 'city-'+d.id);
     }
+}
+function drawAttacks(){
+    $(".attack_icon").remove();
+    for(attack in commingAttacks){
+        if(commingAttacks[attack]){
+            var d = commingAttacks[attack];
+            var my_city = getCityData(currentCityId);
+            var my_city_x = (my_city.loc_x - 0.5) * mapSquareSize;
+            var my_city_y = (my_city.loc_y - 0.5) * mapSquareSize;
+            var enemy_city_x = (d.loc_x - 0.5) * mapSquareSize;
+            var enemy_city_y = (d.loc_y - 0.5) * mapSquareSize;
+            var time_left = d.time_e - parseInt(new Date() / 1000);
+            if(time_left <= 0){
+                commingAttacks[attack] = false;
+                drawAll();
+                continue;
+            }
+            console.log(my_city_x, my_city_y, enemy_city_x, enemy_city_y);
+            var prec = (0.6 + 0.4*((180 - time_left) / 180));
+            var real_x = (my_city_x * prec + enemy_city_x * (1-prec));
+            var real_y = (my_city_y * prec + enemy_city_y * (1-prec));
+
+            drawItem('army2', real_x, real_y, 'attack_icon');
+        }
+    }
+    
 }
 
 
@@ -126,4 +152,5 @@ function drawAll(){
     // draw();
     drawMyCities();
     drawOtherCities();
+    drawAttacks();
 }
