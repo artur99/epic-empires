@@ -209,8 +209,10 @@ function showTaskList(){
         $('.menuh:first-child').animate({scrollTop: 0}, 100);
     })
 }
-setInterval(recursiveUiUpdate, 15000);
-setInterval(function(){
-    checkForAttacks();
-    getReports();
-}, 4000);
+if($("#game").lenght > 0){
+    setInterval(recursiveUiUpdate, 15000);
+    setInterval(function(){
+        checkForAttacks();
+        getReports();
+    }, 8000);
+}
