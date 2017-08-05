@@ -307,7 +307,7 @@ class GameModel extends BaseModel{
     }
     function getReports($uid, $cid){
         if(!($city_data = $this->checkUserCity($uid, $cid))) return $this->err2();
-        $stmt = $this->db->prepare("SELECT * FROM reports WHERE city_id = :cid ORDER BY time DESC");
+        $stmt = $this->db->prepare("SELECT * FROM reports WHERE city_id = :cid ORDER BY time DESC LIMIT 10");
         $stmt->bindValue('cid', $cid);
         $stmt->execute();
 
