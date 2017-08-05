@@ -1,7 +1,7 @@
 # Epic Empires
 ## About
 This is a Strategy MMO online game built in PHP. <br>
-Been built in the Open phase of the national Infoeducation contest in Romania, in 24(+2) hours to code. (Fixed a few bugs later).
+Been built in the Open phase of the national <a href="http://infoeducatie.ro">Infoeducation</a> 2017 contest in Romania, in 24(+2) hours to code. (Fixed a few bugs later).
 ## Build
 ```
 $ npm install -g bower grunt-cli
