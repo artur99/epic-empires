@@ -4,6 +4,7 @@ var map = {offset_x:0, offset_y:0};
 var userCities = null;
 var otherCities = null;
 var currentCity = 0;
+var currentCityId = 0;
 var commingAttacks = goingAttacks = null;
 var lone = [0, 0, 0, 0, 0];
 var listReports = null;

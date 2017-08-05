@@ -96,7 +96,16 @@ function reload(time, loc){
             window.location.reload();
     }, time);
 }
-function ajaxPost(url, data, callback){
+function ajaxPost(url, data, callback, integrityCheck){
     data.csrftoken = csrftoken;
-    $.post(url, data, callback);
+    $.post(url, data, function(data){
+        if(typeof data == 'object' && typeof data.token_error != 'undefined' && data.token_error){
+            return error_txt('Please refresh your page! If error persists, delete your cookies.', 'Token error!');
+        }
+        if(typeof integrityCheck != 'undefined' && integrityCheck){
+            if(typeof data != 'object')
+                return error_txt('Please refresh your page! If error persists, delete your cookies.', 'Unknown error!');
+        }
+        callback(data);
+    });
 }

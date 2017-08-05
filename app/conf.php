@@ -151,7 +151,7 @@ $app->before(function ($request)use($app) {
     $rm->matchPath("/ajax/.*");
     if($rm->matches($request)){
         if($app['csrf']->getToken('main')->__tostring() != $request->get('csrftoken')){
-            return new JsonResponse(['type'=>'error','text'=>'Token invalid']);
+            return new JsonResponse(['type'=>'error','token_error'=>1,'text'=>'Invalid token']);
         }
     }
 });

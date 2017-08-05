@@ -50,48 +50,85 @@ class GameCron{
                 $stmt->bindValue('id', $task['id']);
                 $stmt->execute();
             }elseif($task['type'] == 'attack'){
-                $ta = $this->getCityInfo($task['city_id']);
-                $tq = $this->getCityInfo($task['target']);
+                $city_attk = $this->getCityInfo($task['city_id']);
+                $city_target = $this->getCityInfo($task['target']);
                 $unz = @json_decode($task['param']);
 
-                $units1 = [
+                $attk_city_id = $city_attk['id'];
+                $attk_id = $city_attk['user_id'];
+                $attk_username = $city_attk['username'];
+
+                $target_city_id = $city_target['id'];
+                $target_id = $city_target['user_id'];
+                $target_username = $city_target['username'];
+
+                $units_attacker = [
                     'units' => intval(isset($unz->units)?$unz->units:0),
                     'archers' => intval(isset($unz->archers)?$unz->archers:0)
                 ];
-                $units2 = [
-                    'units' => intval($tq['units']),
-                    'archers' => intval($tq['archers'])
+                $units_target = [
+                    'units' => intval($city_target['units']),
+                    'archers' => intval($city_target['archers'])
                 ];
-                $battle = $this->runBattle($units1, $task['city_level'], $units2, $tq['level']);
-                $units0 = [$units1, $units2];
-                $p1_lost['units'] = -max(0, $units0[0]['units'] - max(0, $battle[0]['units']));
-                $p1_lost['archers'] = -max(0, $units0[0]['archers'] - max(0, $battle[0]['archers']));
-                $p2_lost['units'] = -max(0, $units0[1]['units'] - max(0, $battle[1]['units']));
-                $p2_lost['archers'] = -max(0, $units0[1]['archers'] - max(0, $battle[1]['archers']));
-                // var_dump($p1_lost, $p2_lost);die();
+                $battleResults = $this->runBattle($units_attacker, $city_attk['level'], $units_target, $city_target['level']);
+                $unitsInitial = [
+                    'attk' => $units_attacker,
+                    'target' => $units_target
+                ];
+                $unitsFinal = [
+                    'attk' => $battleResults['attacker'],
+                    'target' => $battleResults['target']
+                ];
+                $attk_lost['units'] = ($unitsFinal['attk']['units'] - $unitsFinal['attk']['units']);
+                $attk_lost['archers'] = ($unitsInitial['attk']['archers'] - $unitsFinal['attk']['archers']);
+                $target_lost['units'] = ($unitsInitial['target']['units'] - $unitsFinal['target']['units']);
+                $target_lost['archers'] = ($unitsInitial['target']['archers'] - $unitsFinal['target']['archers']); 
+                // var_dump($unitsInitial, $unitsFinal, $battleResults, $attk_lost, $target_lost);die();
+                // var_dump($units_attacker, $units_target, $battleResults);die();
+                // var_dump($attk_lost, $target_lost);die();
 
-                $food = $tq['r_food'];
-                $wood = $tq['r_wood'];
-                $gold = $tq['r_gold'];
+                $food = $city_target['r_food'];
+                $wood = $city_target['r_wood'];
+                $gold = $city_target['r_gold'];
                 $prd = ['food' => $food, 'wood' => $wood, 'gold' => $gold];
-                if($battle[2] == true){
+                if($battleResults['won'] == true){
                     //He won the battle
 
                     $max = $maxes[$task['city_level']];
-                    $this->resUpdate($tq['id'], $food, $wood, $gold, 0, 0, $max, $battle[0]['units'], $battle[0]['archers']);
-                    $this->resUpdate($ta['id'], -$food, -$wood, -$gold, 0, 0, 99999, $p2_lost['units'], $p2_lost['archers']);
-                    $this->sendReport($ta['user_id'], $ta['id'], 'won', $tq['username'], [$units0, $battle, $prd], $task['time_e']);
-                    $this->sendReport($tq['user_id'], $tq['id'], 'attacked', $ta['username'], [$units0, $battle, $prd], $task['time_e']);
+
+                    // $this->resUpdate($attk_city_id, $food, $wood, $gold, 0, 0, $max, $unitsFinal['attk']['units'], $unitsFinal['attk']['archers']);
+                    $this->resUpdate2($attk_city_id, [
+                        'food' => $food,
+                        'wood' => $wood,
+                        'gold' => $gold,
+                        'max' => $max,
+                        'units' => $unitsFinal['attk']['units'],
+                        'archers' => $unitsFinal['attk']['archers'],
+                    ]);
+                    // $this->resUpdate($target_city_id, -$food, -$wood, -$gold, 0, 0, 99999, -$target_lost['units'], -$target_lost['archers']);
+                    $this->resUpdate2($target_city_id, [
+                        'food' => -$food,
+                        'wood' => -$wood,
+                        'gold' => -$gold,
+                        'units' => -$target_lost['units'],
+                        'archers' => -$target_lost['archers'],
+                    ]);
+
+                    $this->sendReport($attk_id, $attk_city_id, 'won', $target_username, [$unitsInitial, $unitsFinal, $prd], $task['time_e']);
+                    $this->sendReport($target_id, $target_city_id, 'attacked', $attk_username, [$unitsInitial, $unitsFinal, $prd], $task['time_e']);
 
                     $stmt = $this->db->prepare("DELETE FROM tasks WHERE id = :id LIMIT 1");
                     $stmt->bindValue('id', $task['id']);
                     $stmt->execute();
                 }else{
-                    $this->resUpdate($tq['id'], 0, 0, 0, 0, 0, 99999, $p1_lost['units'], $p1_lost['archers']);
-                    // $this->resUpdate($ta['id'], 0, 0, 0, 0, 0, 99999, $p2_lost['units'], $p2_lost['archers']);
+                    $this->resUpdate2($target_city_id, [
+                        'units' => -$target_lost['units'],
+                        'archers' => -$target_lost['archers']
+                    ]);
 
-                    $this->sendReport($ta['user_id'], $ta['id'], 'lost', $tq['username'], [$units0, $battle], $task['time_e']);
-                    $this->sendReport($tq['user_id'], $tq['id'], 'resisted', $ta['username'], [$units0, $battle], $task['time_e']);
+                    $this->sendReport($attk_id, $attk_city_id, 'lost', $target_username, [$unitsInitial, $unitsFinal], $task['time_e']);
+                    $this->sendReport($target_id, $target_city_id, 'resisted', $attk_username, [$unitsInitial, $unitsFinal], $task['time_e']);
+
                     $stmt = $this->db->prepare("DELETE FROM tasks WHERE id = :id LIMIT 1");
                     $stmt->bindValue('id', $task['id']);
                     $stmt->execute();
@@ -113,10 +150,35 @@ class GameCron{
         $food = intval($food);
         $wood = intval($wood);
         $gold = intval($gold);
-        $points = intval($points);
         $workers = intval($workers);
+        $points = intval($points);
         $units = intval($units);
         $archers = intval($archers);
+        $cid = intval($cid);
+
+        $stmt = $this->db->prepare("UPDATE cities SET r_food = LEAST(r_food + :food, :max_r), r_wood = LEAST(r_wood + :wood, :max_r), r_gold = LEAST(r_gold + :gold, :max_r), r_workers = r_workers + :workers, points = points + :points, units = units + :units, archers = archers + :archers WHERE id = :cid");
+        $stmt->bindValue('food', $food);
+        $stmt->bindValue('wood', $wood);
+        $stmt->bindValue('gold', $gold);
+        $stmt->bindValue('workers', $workers);
+        $stmt->bindValue('units', $units);
+        $stmt->bindValue('archers', $archers);
+        $stmt->bindValue('points', $points);
+        $stmt->bindValue('cid', $cid);
+        $stmt->bindValue('max_r', $max);
+        $stmt->execute();
+
+        return true;
+    }
+    function resUpdate2($cid, $data = []){//$food = 0, $wood = 0, $gold = 0, $workers = 0, $points = 0, $max = 99999, $units = 0, $archers = 0){
+        $food = isset($data['food']) ? intval($data['food']) : 0;
+        $wood = isset($data['wood']) ? intval($data['wood']) : 0;
+        $gold = isset($data['gold']) ? intval($data['gold']) : 0;
+        $workers = isset($data['workers']) ? intval($data['workers']) : 0;
+        $points = isset($data['points']) ? intval($data['points']) : 0;
+        $units =  isset($data['units']) ? intval($data['units']) : 0;
+        $archers =  isset($data['archers']) ? intval($data['archers']) : 0;
+        $max =  isset($data['max']) ? intval($data['max']) : 999999;
         $cid = intval($cid);
 
         $stmt = $this->db->prepare("UPDATE cities SET r_food = LEAST(r_food + :food, :max_r), r_wood = LEAST(r_wood + :wood, :max_r), r_gold = LEAST(r_gold + :gold, :max_r), r_workers = r_workers + :workers, points = points + :points, units = units + :units, archers = archers + :archers WHERE id = :cid");
@@ -172,18 +234,20 @@ class GameCron{
         // }
         // if($units1['units'] < 0) $units1['units'] = 0;
         // if($units2['units'] < 0) $units2['units'] = 0;
-        $units1['units'] -= min($units1['units'], $units2['units']);
-        $units2['units'] -= min($units1['units'], $units2['units']);
+        $mn = min($units1['units'], $units2['units']);
+        $units1['units'] -= $mn;
+        $units2['units'] -= $mn;
 
-        $units1['archers'] -= min($units1['archers'], $units2['archers']);
-        $units2['archers'] -= min($units1['archers'], $units2['archers']);
+        $mn = min($units1['archers'], $units2['archers']);
+        $units1['archers'] -= $mn;
+        $units2['archers'] -= $mn;
 
         $won = false;
         if($units2['units'] + $units2['archers'] == 0 && $units1['units'] + $units1['archers'] > 0){
             $won = true;
         }
         // var_dump($units1, $units2, $won);die();
-        return [$units1, $units2, $won];
+        return ['attacker' => $units1, 'target' => $units2, 'won' => $won];
     }
     function sendReport($user_id, $city_id, $type, $user2name, $info, $time){
         $stmt = $this->db->prepare("INSERT INTO reports (user_id, city_id, title, content, time) VALUES(:uid, :cid, :title, :content, :time)");
@@ -191,19 +255,19 @@ class GameCron{
         $stmt->bindValue('cid', $city_id);
         $stmt->bindValue('time', $time);
         if(in_array($type, ['won', 'lost', 'resisted', 'attacked'])){
-            $u0 = $info[0];
-            $u1 = $info[1];
+            $u0 = $info[0]; //units init
+            $u1 = $info[1]; // units final
             $html1 = '<p>Attacker:<br>';
             $html1 .='<img src="/assets/img/items/res_unit.png" alt="" class="res-img unit-icon" title="Terrain Troops"> ';
-            $html1 .='<span>'.$u0[0]['units'].' -&gt; '.$u1[0]['units'].'</span> <br>';
+            $html1 .='<span>'.$u0['attk']['units'].' -&gt; '.$u1['attk']['units'].'</span> <br>';
             $html1 .='<img src="/assets/img/items/res_archer.png" alt="" class="res-img unit-icon" title="Archer Troops"> ';
-            $html1 .='<span>'.$u0[0]['archers'].' -&gt; '.$u1[0]['archers'].'</span> <br>';
+            $html1 .='<span>'.$u0['attk']['archers'].' -&gt; '.$u1['attk']['archers'].'</span> <br>';
             $html1 .='</p>';
             $html1 .= '<p>Defender:<br>';
             $html1 .='<img src="/assets/img/items/res_unit.png" alt="" class="res-img unit-icon" title="Terrain Troops"> ';
-            $html1 .='<span>'.$u0[1]['units'].' -&gt; '.$u1[1]['units'].'</span> <br>';
+            $html1 .='<span>'.$u0['target']['units'].' -&gt; '.$u1['target']['units'].'</span> <br>';
             $html1 .='<img src="/assets/img/items/res_archer.png" alt="" class="res-img unit-icon" title="Archer Troops"> ';
-            $html1 .='<span>'.$u0[1]['archers'].' -&gt; '.$u1[1]['archers'].'</span> <br>';
+            $html1 .='<span>'.$u0['target']['archers'].' -&gt; '.$u1['target']['archers'].'</span> <br>';
             $html1 .='</p>';
             if($type == 'won'){
                 $title = 'You won the attack against '.$user2name;

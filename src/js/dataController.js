@@ -15,7 +15,7 @@ function getUserInfo(cb){
             currentCity = 0;
         currentCityId = userCities[currentCity].id;
         cb();
-    })
+    }, 1);
 }
 var l_x_ch = -1000;
 var l_y_ch = -1000;
@@ -28,7 +28,7 @@ function getCitiesAround(x_sq, y_sq, cb){
     ajaxPost('/ajax/game/cities', {x: x_sq, y: y_sq}, function(data){
         otherCities = data;
         cb();
-    });
+    }, 1);
 }
 function getCitiesAroundCoord(x_loc, y_loc, cb){
     var x = parseInt(x_loc / 500);

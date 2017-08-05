@@ -17,7 +17,7 @@ function checkForAttacks(){
             $(".cityimage.attack").removeClass('attack');
         }
         drawAttacks();
-    });
+    }, 1);
 }
 function alertForAttack(){
     if(attackAlerted == 0){

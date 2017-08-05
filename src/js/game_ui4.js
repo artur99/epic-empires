@@ -14,7 +14,7 @@ function getReports(){
                 addReports();
             }
         }
-    });
+    }, 1);
 }
 var last_rep_read = 0;
 function addReports(init){
@@ -31,7 +31,7 @@ function addReports(init){
         for(var i in listReports){
             v = listReports[i];
             html1 = '<div>';
-            html1 += '<h4>'+v.title+'</h4>';
+            html1 += '<h4>'+htmlentities(v.title)+'</h4>';
             html1 += '<p>'+v.content+'</p>';
             html1 += '</div>';
             if(init){

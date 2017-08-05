@@ -172,8 +172,6 @@ class GameModel extends BaseModel{
             $err = 'You don\'t have enough wood to send this attack';
         }elseif(isset($cst['food']) && $city_data['r_food'] < $cst['food']){
             $err = 'You don\'t have enough food to send this attack';
-        }elseif($city_data['r_gold'] < 400){
-            $err = 'You don\'t have enough food to send this attack';
         }else{
             $target_data = $this->getCityInfo($tid);
             $distance = sqrt(pow($target_data['loc_x'] - $city_data['loc_x'], 2) + pow($target_data['loc_y'] - $city_data['loc_y'], 2));

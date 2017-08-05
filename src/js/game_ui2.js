@@ -132,7 +132,7 @@ function updateTaskList(cb){
         currentTasks = data;
         if(typeof cb == 'function')
             cb();
-    })
+    }, 1)
 }
 
 
