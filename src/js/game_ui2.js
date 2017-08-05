@@ -210,9 +210,16 @@ function showTaskList(){
     })
 }
 if($("#game").lenght > 0){
-    setInterval(recursiveUiUpdate, 15000);
+    var lower = 2;
     setInterval(function(){
-        checkForAttacks();
-        getReports();
+        if(window_focus){
+            checkForAttacks();
+            getReports();
+            if(lower == 2){
+                recursiveUiUpdate();
+                lower = 0;
+            }
+            lower++;
+        }
     }, 8000);
 }

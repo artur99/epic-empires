@@ -51,3 +51,9 @@ function setMapSquareLocation(x, y){
     y = (parseInt(y)-0.5)*mapSquareSize;
     setMapLocation(x - $("#game").width()/2, y - $("#game").height()/2);
 }
+
+$(window).focus(function() {
+    window_focus = true;
+}).blur(function() {
+    window_focus = false;
+});

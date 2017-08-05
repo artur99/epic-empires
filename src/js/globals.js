@@ -11,5 +11,8 @@ var listReports = null;
 var attackAlerted = 1;
 var selectedCity = null;
 var currentTasks = null;
+var window_focus;
+
+
 var distanceRate = 12;//43;
 var spmRate = 5.3;
