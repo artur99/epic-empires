@@ -212,14 +212,14 @@ function showTaskList(){
 if($("#game").lenght > 0){
     var lower = 2;
     setInterval(function(){
-        if(window_focus){
-            checkForAttacks();
-            getReports();
-            if(lower == 2){
-                recursiveUiUpdate();
-                lower = 0;
-            }
-            lower++;
+        // if(window_focus){
+        checkForAttacks();
+        getReports();
+        if(lower == 2){
+            recursiveUiUpdate();
+            lower = 0;
         }
+        lower++;
+        // }
     }, 8000);
 }
