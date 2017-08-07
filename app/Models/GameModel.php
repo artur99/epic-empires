@@ -7,7 +7,7 @@ use Misc\StaticData;
 
 class GameModel extends BaseModel{
     function getCitiesAround($x, $y){
-        $stmt = $this->db->prepare("SELECT cities.id, cities.name, cities.user_id, cities.loc_x, cities.loc_y, cities.level, cities.points, users.username as username FROM cities INNER JOIN users ON cities.user_id = users.id WHERE ABS(loc_x - :x) < 4 && ABS(loc_y - :y) < 4");
+        $stmt = $this->db->prepare("SELECT cities.id, cities.name, cities.user_id, cities.loc_x, cities.loc_y, cities.level, cities.points, users.username as username FROM cities INNER JOIN users ON cities.user_id = users.id WHERE ABS(loc_x - :x) <= 9 && ABS(loc_y - :y) <= 9");
         $stmt->bindValue('x', $x);
         $stmt->bindValue('y', $y);
         $stmt->execute();
@@ -38,7 +38,16 @@ class GameModel extends BaseModel{
 
     function addTask($city_id, $user_id, $task, $param){
         if(!($city_data = $this->checkUserCity($user_id, $city_id))) return $this->err2();
-        if($task == 'get' && in_array($param, ['food', 'gold', 'wood'])){
+        $dt2 = $this->db->prepare("SELECT COUNT(1) as task_nr FROM tasks WHERE city_id = :city_id");
+        $dt2->bindValue('city_id', $city_id);
+        $dt2->execute();
+        $dt2 = $dt2->fetch();
+        if($dt2['task_nr'] >= 10){
+            return [
+                'type' => 'error',
+                'text' => 'You cannot have more than 10 tasks at once'
+            ];
+        }elseif($task == 'get' && in_array($param, ['food', 'gold', 'wood'])){
             return $this->addResourceTask($city_data, $param);
         }elseif($task == 'build' && in_array($param, ['center', 'academy', 'house', 'barracks'])){
             return $this->addBuildTask($city_data, $param);
@@ -276,11 +285,9 @@ class GameModel extends BaseModel{
         if(!isset($r['user_id']) || $r['user_id'] != $user_id){
             return $this->err2();
         }else{
-            if($r['type'] == 'building' || $r['type'] == 'get'){
-                $stmt = $this->db->prepare("UPDATE cities SET r_workers = r_workers + :wk LIMIT 1");
-                $stmt->bindValue('wk', intval($r['workers']));
-                $stmt->execute();
-            }
+            $stmt = $this->db->prepare("UPDATE cities SET r_workers = r_workers + :wk LIMIT 1");
+            $stmt->bindValue('wk', intval($r['workers']));
+            $stmt->execute();
             $stmt2 = $this->db->prepare("DELETE FROM tasks WHERE id = :id LIMIT 1");
             $stmt2->bindValue('id', $task_id);
             $stmt2->execute();

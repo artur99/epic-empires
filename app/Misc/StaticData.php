@@ -153,14 +153,18 @@ class StaticData{
         return $lvl;
     }
 
-    function resMax(){
+    function resMax($cityLevel){
         // $id = city_level
         $max = [
             0 => 500,
             1 => 500,
-            2 => 5000
+            2 => 5000,
+            3 => 10000,
         ];
-        return $max;
+        if(isset($max[$cityLevel])){
+            return $max[$cityLevel];
+        }
+        return 99999;
     }
     function taskNames(){
         $tn = [

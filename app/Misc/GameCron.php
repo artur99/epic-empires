@@ -18,7 +18,7 @@ class GameCron{
 
     function run(){
         $q = $this->db->query("SELECT tasks.*, cities.level as city_level, cities.units, cities.archers FROM tasks INNER JOIN cities ON cities.id = tasks.city_id WHERE time_e <= UNIX_TIMESTAMP()");
-        $maxes = \Misc\StaticData::resMax();
+        // $maxes = \Misc\StaticData::resMax();
         $tasks = $q->fetchAll();
         foreach($tasks as $task){
             if($task['type'] == 'get'){
@@ -28,8 +28,8 @@ class GameCron{
                 $g = isset($res->gold) ? $res->gold : 0;
                 $wo = isset($res->workers) ? intval($res->workers) : 0;
                 $p = isset($res->points) ? intval($res->points) : 0;
-                $wo += $task['workers'];
-                $max = $maxes[$task['city_level']];
+                $wo += intval($task['workers']);
+                $max = \Misc\StaticData::resMax($task['city_level']);
                 $this->resUpdate($task['city_id'], $f, $w, $g, $wo, $p, $max);
                 $stmt = $this->db->prepare("DELETE FROM tasks WHERE id = :id LIMIT 1");
                 $stmt->bindValue('id', $task['id']);
@@ -41,7 +41,7 @@ class GameCron{
                 $g = isset($res->gold) ? $res->gold : 0;
                 $wo = isset($res->workers) ? intval($res->workers) : 0;
                 $p = isset($res->points) ? intval($res->points) : 0;
-                $wo += $task['workers'];
+                $wo += intval($task['workers']);
                 $this->resUpdate($task['city_id'], $f, $w, $g, $wo, $p);
                 $this->buildingLvlUpdate($task['city_id'], $task['param']);
                 if($task['param'] == 'center')
@@ -82,7 +82,7 @@ class GameCron{
                 $attk_lost['units'] = ($unitsFinal['attk']['units'] - $unitsFinal['attk']['units']);
                 $attk_lost['archers'] = ($unitsInitial['attk']['archers'] - $unitsFinal['attk']['archers']);
                 $target_lost['units'] = ($unitsInitial['target']['units'] - $unitsFinal['target']['units']);
-                $target_lost['archers'] = ($unitsInitial['target']['archers'] - $unitsFinal['target']['archers']); 
+                $target_lost['archers'] = ($unitsInitial['target']['archers'] - $unitsFinal['target']['archers']);
                 // var_dump($unitsInitial, $unitsFinal, $battleResults, $attk_lost, $target_lost);die();
                 // var_dump($units_attacker, $units_target, $battleResults);die();
                 // var_dump($attk_lost, $target_lost);die();
