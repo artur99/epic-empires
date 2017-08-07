@@ -122,7 +122,7 @@ function uiUpdateTaskList(cb){
         $(".tasklist .accordion-data").append(html);
     }
     if(currentTasks.length == 0){
-        $(".tasklist .accordion-data").html('<p>No runnig task...</p>');
+        $(".tasklist .accordion-data").html('<p>No running tasks...</p>');
     }
 }
 function updateTaskList(cb){

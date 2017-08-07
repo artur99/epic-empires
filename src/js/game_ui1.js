@@ -154,7 +154,7 @@ function drawAttacks(){
         }
         $(".in-attacks .accordion-data").html(html1);
         if(!commingAttacks || commingAttacks.length == 0){
-            $(".in-attacks .accordion-data").html('<p>No runnig task...</p>');
+            $(".in-attacks .accordion-data").html('<p>No incoming attacks...</p>');
         }
     }
     for(attack in goingAttacks){
@@ -202,7 +202,7 @@ function drawAttacks(){
         }
         $(".out-attacks .accordion-data").html(html1);
         if(!goingAttacks || goingAttacks.length == 0){
-            $(".out-attacks .accordion-data").html('<p>No runnig task...</p>');
+            $(".out-attacks .accordion-data").html('<p>No outgoing attacks...</p>');
         }
     }
 }
